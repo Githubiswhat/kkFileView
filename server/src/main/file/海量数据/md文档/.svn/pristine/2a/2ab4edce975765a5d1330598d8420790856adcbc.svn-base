@@ -1,0 +1,102 @@
+## 聚合函数嵌套
+
+**功能描述**
+
+Vastbase支持聚合函数嵌套使用。其中内层聚合函数用于计算通过group by子句定义的分组的聚合结果，再将内层聚合函数返回的结果集使用外层聚合函数再进行一次聚合计算，从而返回整体的结果。
+
+**语法格式**
+
+```
+aggregate_name1(aggregate_name2(expression[,…][order_by_clause]))
+aggregate_name1(aggregate_name2(ALL expression [,…][order_by_clause]))
+aggregate_name1(aggregate_name2(DISTINCT expression[,…][order_by_clause]))
+aggregate_name1(aggregate_name2(*))
+aggregate_name1(aggregate_name2([expression[,…]]))
+```
+
+**参数说明**
+
+- aggregate_name1：预定义的聚合函数名称1，内层函数。
+- aggregate_name2：预定义的聚合函数名称2，外层函数。
+- expression：自身不包含聚合函数表达式的任意值表达式。
+
+**注意事项**
+
+聚合函数嵌套的用法约束有如下限制：
+
+- 必须含有group by子句，否则报错。例如：
+
+```
+select avg(max(salary)) from empsalary;
+```
+
+- 查询列中同时包括嵌套聚合函数和非嵌套聚合函数时报错。例如：
+
+```
+select avg(max(salary)),max(salary) from empsalary group by department_id;
+```
+
+- 查询列中同时包括嵌套聚合函数和一般列时报错。例如：
+
+```
+select avg(max(salary)),salary from empsalary group by department_id;
+```
+
+**示例**
+
+1、创建测试表empsalary。
+
+```
+create table empsalary (
+depname  varchar,
+empno  int,
+salary int
+);
+```
+
+2、插入数据。
+
+```
+insert into empsalary values('develop',10,5200);
+insert into empsalary values('develop',10,5200);
+insert into empsalary values('saleseeee',10,5000);
+insert into empsalary values('personnel11',5,500);
+insert into empsalary values('personnel11',5,500);
+insert into empsalary values('personnel11',5,500);
+insert into empsalary values('personnel1',5,500);
+insert into empsalary values('sales',1,5200);
+insert into empsalary values('sales',1,5200);
+insert into empsalary values('selaseee',1,5000);
+```
+
+3、调用聚合嵌套函数1。
+
+```
+select max(max(Empno)),max(sum(salary)) from empsalary group by depname;
+```
+
+返回结果如下，则表示调用成功：
+
+```
+max | max
+-----------
+10  | 10400
+(1 row)
+```
+
+4、调用聚合嵌套函数2。
+
+```
+select max(sum(Empno)),max(sum(salary)) from empsalary group by depname;
+```
+
+返回结果如下，则表示调用成功：
+
+```
+ max |  max  
+-----+-------
+  20 | 10400
+(1 row)
+```
+
+# 

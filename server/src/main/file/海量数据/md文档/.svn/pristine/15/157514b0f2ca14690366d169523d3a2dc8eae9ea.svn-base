@@ -1,0 +1,31 @@
+##### 动态调用存储过程
+
+**功能描述**
+
+动态调用存储过程就是在程序运行的时候调用存储过程。使用EXECUTE IMMEDIATE…CALL语句执行。
+
+**语法格式**
+
+语法请参见下图。
+
+call_procedure::=
+
+ <div align="left"><img src="image/动态调用语法.jpg" style="zoom:50%")</div>  
+
+using_clause子句的语法参见下图。
+
+using_clause::=
+
+ <div align="left"><img src="image/动态调用using_clause子句语法.jpg" style="zoom:50%")</div>   
+
+ **参数说明**
+
+- CALL procedure_name: 调用存储过程。
+
+- [:placeholder1，:placeholder2，…] ：存储过程参数占位符列表。占位符个数与参数个数相同。
+
+- USING  [IN|OUT|IN OUT] bind_argument: 用于指定存放传递给存储过程参数值的变量。bind_argument前的修饰符与对应参数的修饰符一致。
+
+**注意事项**
+
+动态调用存储过程必须使用匿名的语句块将存储过程或语句块包在里面，使用EXECUTE IMMEDIATE…USING语句后面带IN、OUT来输入、输出参数。

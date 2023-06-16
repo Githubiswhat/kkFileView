@@ -1,0 +1,36 @@
+# 软件升级
+
+## 前提条件
+
+- 补丁包的安装是基于现有系统上进行的，因此，安装补丁包前需要确保目标机器已安装了exBase。
+- 升级时请使用root用户执行脚本。
+
+## 操作步骤
+
+补丁包大小约150MB，将安装包上传，并解压到任意目录，此处以解压Upgrade_exbase-3.11_centos-7.x86_64.2022101312.zip到/exbase目录为例。
+
+```
+cd /exbase
+unzip Upgrade_exbase-3.11_centos-7.x86_64.2022101312.zip
+```
+
+解压后进入/exbase/upgrade目录执行安装命令：
+
+```
+cd upgrade/
+./setup.sh
+```
+
+执行安装脚本时需要输入原有exBase的安装路径，脚本会根据输入的路径校验目录是否为exBase的安装路径。
+
+<div align="center"><img src="image/版本升级.png" style="zoom:82%"></div>
+
+检查是否重启成功，重启后使用以下命令查看exbase.log。
+
+```
+cat /exbase/data/log4engine/exbase.log
+```
+
+
+显示如下打印信息：
+<div align="center"><img src="image/升级日志.png" style="zoom:70%"></div>

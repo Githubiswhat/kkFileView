@@ -1,0 +1,16 @@
+# 数据类型及操作符
+
+本章节主要介绍在Vastbase G100数据库兼容Oracle支持的常规数据类型和操作符，包括如下内容：
+
+<a href="Oracle兼容性/^=运算符.html"><li>**^=运算符**</li></a>
+
+<a href="Oracle兼容性/bfile数据类型.html"><li>**BFILE数据类型**</li></a>
+
+<a href="Oracle兼容性/BINARY_FLOAT数据类型.html"><li>**BINARY_FLOAT数据类型**</li></a>
+
+<a href="Oracle兼容性/DATE类型的减法与乘法.html"><li>**DATE类型的减法与乘法**</li></a>
+
+<a href="Oracle兼容性/DATE数据类型.html"><li>**DATE数据类型**</li></a>
+
+<a href="Oracle兼容性/TIMESTAMP数据类型.html"><li>**TIMESTAMP数据类型**</li></a>
+

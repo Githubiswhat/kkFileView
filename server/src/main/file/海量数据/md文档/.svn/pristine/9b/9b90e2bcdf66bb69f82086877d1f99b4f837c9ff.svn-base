@@ -1,0 +1,107 @@
+# 参数名重载
+
+## 功能描述
+
+Vastbase G100在Oracle兼容模式下，支持enable_proc_param_name_override参数。
+
+enable_proc_param_name_override参数可以控制重载包函数时，是否对参数名进行检查。
+
+取值范围：on、off
+
+- 当参数值为off，重载包函数时不包括对参数名的检查。
+- 当参数值为on，重载包函数时包含对参数名的检查。用户调用包函数时不指定入参名称则调用函数失败，指定入参名称则调用函数成功。
+
+默认值：off
+
+## 注意事项
+
+本特性仅在数据库兼容模式为Oracle时能够使用（即创建DB时DBCOMPATIBILITY='A'），在其他数据库兼容模式下不能使用该特性。
+
+## 语法格式
+
+```sql
+set enable_proc_param_name_override=on/off;
+```
+
+## 示例
+
+1、开启特性参数enable_proc_param_name_override 。
+
+```sql
+set enable_proc_param_name_override=on;
+```
+
+2、新建具有同函数名、同参数类型的包。
+
+```sql
+CREATE OR REPLACE PACKAGE pkg1 IS
+	FUNCTION f1(p1 number,p2 number) RETURN number;
+	FUNCTION f1(p1 number,p3 number) RETURN number;
+end pkg1;
+/
+
+CREATE OR REPLACE PACKAGE BODY pkg1 IS
+	FUNCTION f1(p1 number,p2 number) RETURN number
+	as
+	begin
+		return p1+p2
+	end;
+	FUNCTION f1(p1 number,p3 number) RETURN number
+	as
+	begin
+		return p1-p3;
+	end;
+end;
+/
+```
+
+3、完全指定参数名，调用包函数。
+
+```sql
+select pkg.f1(p1=>100,p2=>50);
+```
+
+返回结果为：
+
+```sql
+f1
+-----
+150
+(1 row)
+```
+
+4、不完全指定参数名，只指定函数存在差异的参数名时调用包函数。
+
+```sql
+select pkg.f1(100,p3=>50);
+```
+
+返回结果为：
+
+```sql
+f1
+-----
+50
+(1 row)
+```
+
+> <div align="left"><img src="image/img1.png" style="zoom:75%"></div>
+>
+> 用户调用包函数时，不指定函数存在差异的参数名或使用语法不规范则调用失败。
+>
+> ```sql
+> select pkg1.f1(100,50);
+> ```
+>
+> 返回结果：
+>
+> ```sql
+>   ERROR: function pkg1.f1(integer,integer) is not unique
+>   LINE1:select pkg1.f1(100,50);
+>        ^
+>   HINT: Could not choose a best candidate function.You might need to explicit type casts.
+>   CONTEXT:referenced colimn:f1
+> ```
+
+
+

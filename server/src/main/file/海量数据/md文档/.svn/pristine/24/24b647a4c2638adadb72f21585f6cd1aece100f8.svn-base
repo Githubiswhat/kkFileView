@@ -1,0 +1,101 @@
+### 函数调用时无入参
+
+**功能描述**
+
+支持在存储过程，函数和触发器中调用无传入参数的函数时省略括号。
+
+**语法格式**
+调用无传入参数的自定义函数，调用语法如下：
+
+```
+方式一：
+select function_name from dual;
+方式二：
+select * from tab where col=function_name;
+```
+
+**注意事项**
+
+如果查询的表字段出现同名函数的时候，where条件不允许输入函数。例如：
+
+```
+ create table t2(id int,fun1 varchar2(20));
+ select t2 where id=fun1;
+```
+
+返回结果为：
+
+```
+ERROR:  column "t2" does not exist
+LINE 1: select t2 where id=fun1;
+               ^
+CONTEXT:  referenced column: t2
+```
+
+**示例**
+
+1、创建测试表并插入数据。
+
+```
+create table t(id int, name varchar2(200)); 
+insert into t values (1,'al'); 
+insert into t values (2,'a2');
+```
+
+2、创建存储存储过程。
+
+```
+create or replace function fun1 return number 
+as
+v_col varchar(100);
+begin
+select 1 into v_col from dual;
+return v_col;
+end;
+/
+```
+
+3、调用方式一。
+
+```
+select fun1 from dual;
+```
+
+返回结果为：
+
+```
+ fun1
+------
+    1
+(1 row)
+```
+
+4、调用方式二
+
+```
+select * from t where id = fun1;
+```
+
+返回结果为：
+
+```
+ id | name
+----+------
+  1 | al
+(1 row)
+```
+
+5、调用方式三
+
+```
+select fun1,id from t where id=2; 
+```
+
+返回结果为：
+
+```
+ fun1 | id
+------+----
+    1 |  2
+(1 row)
+```

@@ -1,0 +1,203 @@
+
+-   array_delete(anyarray)
+
+    描述：清空数组中的元素并返回一个同类型的空数组。
+
+    返回类型：anyarray
+
+    示例：
+
+```
+vastbase=# SELECT array_delete(ARRAY[1,8,3,7]) AS RESULT;
+    result 
+--------
+    {}
+(1 row)
+```
+
+
+-   array_except(anyarray, anyarray)
+
+    描述：两个数组取差，只支持一维数组。
+
+    返回类型：anyarray
+
+    示例：
+
+```
+vastbase=# SELECT array_except(ARRAY[1,2,3], ARRAY[3,4,5]) AS RESULT;
+    result    
+-------------
+    {1,2}
+(1 row)
+```
+
+-   array_except_distinct(anyarray, anyarray)
+
+    描述：两个数组取差，并去重，只支持一维数组。
+
+    返回类型：anyarray
+
+    示例：
+
+```
+vastbase=# SELECT array_except_distinct(ARRAY[1,2,2,3], ARRAY[3,4,5]) AS RESULT;
+    result    
+-------------
+    {1,2}
+(1 row)
+```
+
+-   array_exists(anyarray, int)
+
+    描述：检查第二个参数是否是数组的合法下标。
+
+    返回类型：boolean
+
+    示例：
+
+```
+vastbase=# SELECT array_exists(ARRAY[1,8,3,7],1) AS RESULT;
+    result 
+--------
+    t
+(1 row)
+```
+
+-   array_extendnull(anyarray, int)
+
+    描述：往数组尾部添加指定个数的null空元素。
+
+    返回类型：anyarray
+
+    示例：
+
+```
+vastbase=# SELECT array_extendnull(ARRAY[1,8,3,7],1) AS RESULT;
+    result 
+--------------
+{1,8,3,7,null}
+(1 row)
+```
+
+-   array_intersect(anyarray, anyarray)
+
+    描述：两个数组取交集，只支持一维数组。
+
+    返回类型：anyarray
+
+    示例：
+
+```
+vastbase=# SELECT array_intersect(ARRAY[1,2,3], ARRAY[3,4,5]) AS RESULT;
+    result    
+-------------
+    {3}
+(1 row)
+```
+
+-   array_intersect_distinct(anyarray, anyarray)
+
+    描述：两个数组取交集，并去重，只支持一维数组。
+
+    返回类型：anyarray
+
+    示例：
+
+```
+vastbase=# SELECT array_intersect_distinct(ARRAY[1,2,2], ARRAY[2,2,4,5]) AS RESULT;
+    result    
+-------------
+    {2}
+(1 row)
+```
+
+
+- array_length(anyarray, int)
+
+    描述：返回指定数组维度的长度。int为指定数组维度。
+
+    返回类型：int
+
+    示例：
+
+
+示例一：
+
+```
+vastbase=# select array_length(array[1,2,3], 1) AS RESULT;
+```
+
+  当结果显示如下信息，则表示函数调用成功。
+
+```
+result 
+--------
+    3
+(1 row)
+```
+
+示例二：
+
+```
+vastbase=# select array_length(array[[1,2,3],[4,5,6]], 2) AS RESULT;
+```
+
+  当结果显示如下信息，则表示函数调用成功。
+
+```
+result
+--------
+    3
+(1 row)
+```
+
+-   array_lower(anyarray, int)
+
+    描述：返回指定数组维数的下界。int为指定数组维度。
+
+    返回类型：int
+
+    示例：
+
+```
+vastbase=# SELECT array_lower('[0:2]={1,2,3}'::int[], 1) AS RESULT;
+    result 
+--------
+        0
+(1 row)
+```
+
+
+-   array_next(anyarray, int)
+
+    描述：根据第二个入参返回数组中指定下标元素的下一个元素的下标。
+
+    返回类型：int
+
+    示例：
+
+```
+vastbase=# SELECT array_next(ARRAY[1,8,3,7],1) AS RESULT;
+    result 
+--------
+        2
+(1 row)
+```
+
+
+- array_position(anyarray,anyelement,[,integer])
+
+</br>
+```
+SELECT array_position(array[1,4,2,5,7],2) AS RESULT;
+```
+
+当结果显示如下信息，则表示函数调用成功。
+  
+```
+ result 
+ --------
+        3
+(1 row)
+```

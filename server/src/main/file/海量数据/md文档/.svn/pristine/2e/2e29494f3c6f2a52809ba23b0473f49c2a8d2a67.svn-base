@@ -1,0 +1,50 @@
+###  嵌套表
+
+**功能描述**
+
+在数据库中嵌套表是一种列类型，用于存储未指定数量的行。未初始化的嵌套表变量是一个空集合，使用前必须对其进行初始化，方法是将其设置为空或分配一个非NULL的值。Vastbase G100 build 9支持在PL/pgSQL中定义嵌套表类型，以及定义和使用嵌套表变量，并支持嵌套表元素的赋值以及访问。
+
+**语法格式**
+
+```
+---嵌套表的声明
+TYPE typename IS TABLE OF datatype;
+```
+
+**参数说明**
+
+- typename：类型名称。
+- datatype：数组元素支持Vastbase数据类型包括数值、字符、时间以及自定义类型，不支持REF CURSOR和NCLOB类型。
+
+**注意事项**
+
+- 赋值与访问嵌套表变量，访问的下标类型是整型数字下标。
+- 嵌套表不支持初始化赋值，直接对数组赋值而不初始化数组。
+- 嵌套表的数组会自动增长，访问越界会返回一个NULL，不会报错。
+- 嵌套表在存储过程中定义的数组类型，其作用域仅在该存储过程中。
+
+**示例**
+
+定义嵌套表。
+
+```
+CREATE OR REPLACE FUNCTION Fun() RETURNS int AS $$
+DECLARE
+TYPE ARRAY_INTEGER IS TABLE OF int;   --定义类型
+ARRINT ARRAY_INTEGER;   --定义变量
+BEGIN
+ARRINT[1] := 1;   --通过常量下标给数组赋值
+FOR I IN 2..16 LOOP
+    select I into ARRINT[I] from dual;  --通过变量下标给数组赋值
+END LOOP;
+RETURN ARRINT[2];
+END;
+$$
+LANGUAGE plpgsql;
+```
+
+返回结果为：
+
+```
+CREATE FUNCTION
+```

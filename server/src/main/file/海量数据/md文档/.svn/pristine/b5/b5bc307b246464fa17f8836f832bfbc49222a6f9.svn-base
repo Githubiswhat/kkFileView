@@ -1,0 +1,54 @@
+### ^=运算符
+
+**功能描述**
+
+实现oracle^=运算符，即不等于运算符，类似于!=和<>。
+
+**兼容性**
+
+完全兼容。
+
+**示例**
+
+1、创建测试表并插入数据。
+
+```
+create table t_ysf4(
+  id int,
+  col_varchar varchar(30),
+  col_int int,
+  col_date date
+  );
+  insert into t_ysf4 values(1,'1',1,'1997-02-20');
+  insert into t_ysf4 values(2,'2',2,'2007-02-20');
+```
+
+2、使用^=运算符。
+
+```
+select * from t_ysf4 where col_int ^='1';
+```
+
+返回结果如下：
+
+```
+ id | col_varchar | col_int |      col_date
+----+-------------+---------+---------------------
+  2 | 2           |       2 | 2007-02-20 00:00:00
+(1 row)
+```
+
+4、使用^=运算符进行判断。
+
+```
+select '1' ^= '2';
+```
+
+返回结果为：
+
+```
+ ?column?
+----------
+ t
+(1 row)
+```

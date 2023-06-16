@@ -1,0 +1,152 @@
+# 数据库启动及安装包完整性校验
+
+## 功能描述
+
+Vastbase G100支持对重要文件和重要路径进行安全性管理。
+
+- 数据库启动时，对块和数据库参数文件进行检验，并在过程中进行日志回显。
+- 对重要文件可以生成对应的MD5文件、提供MD5检验功能、提供恢复功能。
+
+## 语法格式
+
+```
+./pkg_integrity_check.sh [OPTION]
+```
+
+其中[option]具体内容如下：
+
+- 查看帮助信息。
+
+  ```
+  -h|--help   
+  ```
+
+- 基于生成的md5sum文件列表检测指定路径下文件的MD5值，查看重要文件是否被修改。
+
+  ```
+  -c|--check MD5_SUM_FILE_LIST
+  ```
+
+- 为指定路径生成md5sum文件列表。
+
+  ```
+  -g|--generate SRCDIR
+  ```
+
+- 基于原始安装包和md5sum文件列表恢复指定路径下的重要文件。
+
+  ```
+  -r|--restore INSTALLER MD5_SUM_FILE_LIST
+  ```
+
+## 参数说明
+
+- **MD5_SUM_FILE_LIST**
+
+  存放生成的MD5文件的文件夹路径。
+
+- **SRCDIR**
+
+  待生成MD5文件的对象路径。
+
+- **INSTALLER**
+
+  原始安装包所在的路径。
+
+## 注意事项
+
+- 本功能仅在Vastbase G100 2.2 Build 12及以后版本支持使用。
+- 原始安装包所在的路径要具体到tar包。
+
+## 示例
+
+1、启动数据库时进行块检测和数据库参数文件检验，并进行日志回显。
+
+```shell
+vb_ctl start
+```
+
+部分启动日志回显为：
+
+```shell
+0 [BACKEND] LOG:  the config file /home/vastbase/data/vastbase/postgresql.conf verify start.    
+2023-02-16 09:31:50.859 [unknown] [unknown] localhost 47423508904576 0[0:0#0]  0   [BACKEND] LOG:  the config file /home/vastbase/data/vastbase/postgresql.conf ve  rify success.
+```
+
+2、进入数据库安装路径即home/vastbase/local/vastbase目录，对指定路径（本例中即对/home/vastbase/local/vastbase/bin/路径）生成md5sum文件列表。
+
+```shell
+cd /home/vastbase/local/vastbase
+./bin/pkg_integrity_check.sh -g bin/
+```
+
+3、查看是否对重要路径下的文件有md5校验功能。
+
+```shell
+./bin/pkg_integrity_check.sh -c bin/md5sumf
+```
+
+回显结果如下（部分展示）：
+
+```shell
+bin/alarmItem_bak2.conf: OK
+bin/alarmItem_bak.conf: OK
+bin/clusterdb: OK
+bin/cluster_guc.conf: OK
+bin/collect_debug_info.sh: OK
+bin/constant: OK
+bin/createdb: OK
+bin/createlang: OK
+bin/createuser: OK
+bin/dbmind/app/diagnosis/cluster/entry.py: OK
+bin/dbmind/app/diagnosis/cluster/__init__.py: OK
+...
+```
+
+4、对已生成的md5文件进行恢复。
+
+> <div align="left"><img src="image/img2.png" style="zoom:75%")</div> 
+>
+> 此处为了模拟文件丢失情况，修改了bin目录下某篇文件的文件名：
+>
+> ```shell
+> mv alarmItem.conf alarmItem_bak.conf
+> ```
+
+```shell
+./bin/pkg_integrity_check.sh -r /soft/vb_212/vastbase-installer/Vastbase-G100-2.2_Build12\(11698\)-centos_7-x86_64.tar.gz bin/md5sumf
+```
+
+回显结果为：
+
+```shell
+Restore will take time, please wait a few minutes.
+Begin to decompress the package...
+Begin to restore...
+md5sum: bin/alarmItem.conf: No such file or directory
+md5sum: WARNING: 1 listed file could not be read
+Begin to recheck ...
+line 1
+line bin/alarmItem.conf:
+md5sum: bin/alarmItem.conf: No such file or directory
+-----------------------------------------------------------
+
+  =>
+9053245116a12ce4c8d98aa4a0b429d1  bin/alarmItem.conf
+-----------------------------------------------------------
+Successfully restored.
+```
+
+5、查看bin目录下情况：
+
+```shell
+ll bin/a*
+```
+
+此时bin目录下，丢失的alarmItem.conf文件被成功恢复回来：
+
+```shell
+-rw-r----- 1 vastbase vastbase 7297 Feb 15 02:44 bin/alarmItem_bak.conf
+-rw-r----- 1 vastbase vastbase 7297 Feb 15 02:44 bin/alarmItem.conf
+```
+

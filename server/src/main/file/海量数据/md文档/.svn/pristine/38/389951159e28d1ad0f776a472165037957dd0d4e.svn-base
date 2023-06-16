@@ -1,0 +1,3 @@
+#### DBA_CONSTRAINTS
+
+DBA_CONSTRAINTS视图提供所有用户的表上的约束信息。视图中的字段与ALL_CONSTRAINTS相同。具体请参考章节“ALL_CONSTRAINTS”。

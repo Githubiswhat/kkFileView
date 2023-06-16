@@ -1,0 +1,56 @@
+### 虚拟列语法
+
+**功能描述**
+
+创建数据表时（CREATE TABLE）可指定字段为虚拟列，在修改数据表（ALTER TABLE）可添加虚拟列字段。
+
+**语法格式**
+
+```
+GENERATED ALWAYS AS ( generation_expr ) STORED;
+```
+
+**参数说明**
+
+generation_expr：表达式
+
+**示例**
+
+1、创建测试表并插入数据。
+
+```
+create table t_virtual(c1 int,c2 int,v_c3 int GENERATED ALWAYS AS(c1 + c2) stored);
+insert into t_virtual values(1, 2);
+select * from t_virtual;
+```
+
+返回结果为：
+
+```
+ c1 | c2 | v_c3 
+----+----+------
+  1 |  2 |    3
+(1 row)
+```
+
+2、更新表的内容。
+
+```
+update t_virtual set c1=2;
+select * from t_virtual;
+ c1 | c2 | v_c3 
+----+----+------
+  2 |  2 |    4
+(1 row)
+```
+
+3、删除表中的字段。
+
+```
+ALTER TABLE t_virtual drop c1;
+select * from t_virtual;
+ c2 
+----
+  2
+(1 row)
+```

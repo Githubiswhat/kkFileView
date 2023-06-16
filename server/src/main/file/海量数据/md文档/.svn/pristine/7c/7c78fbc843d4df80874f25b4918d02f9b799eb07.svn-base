@@ -1,0 +1,386 @@
+# 事件触发器
+
+## 功能描述
+
+事件触发器是一个数据库范围内可见的对象，用来捕捉某些DDL操作，只要指定的事件发生并且该触发器相关的 WHEN 条件（如果有）被满足，该触发器的函数将被执行。
+
+## 特性支持
+
+- 支持使用C、C++或是 plpgsql来编写一个事件触发器，但不能使用 SQL 语言函数编写。
+- 支持on schema限定条件。
+- 支持Logon和Logoff系统事件。
+- 支持startup/shutdown系统事件。
+- 支持ddl_command_start 事件。在 CREATE、ALTER、DROP、SECURITY LABEL、COMMENT、GRANT或者 REVOKE命令的执行之前触发。在事件触发器引发前不会做受影响对象是否存在的检查。不过，一个例外是，这个事件不会被目标是共享对象数据库、角色以及表空间的 DDL命令触发，也不会被目标是事件触发器的 DDL 命令触发。事件触发器机制不支持这些对象类型。ddl_command_start 也会在 SELECT INTO 命令的执行之前触发，因为这等价于CREATE TABLE AS。
+- 支持ddl_command_end 事件。在同一组命令的执行之后触发。为了得到发生的DDL操作的更多细节，可以从ddl_command_end 事件触发器代码中使用集合返回函数pg_event_trigger_ddl_comands()。注意该触发器是在那些动作已经发生之后（但是在事务提交前）引发，并且因此系统目录会被读作已更改。
+- 支持sql_drop 事件。为任何删除数据库对象的操作在 ddl_command_end 事件触发器之前触发。要列出已经被删除的对象，可以从 sql_drop 事件触发器代码中使用集合返回函数pg_event_trigger_dropped_objects()。注意该触发器是在对象已经从系统目录删除以后执行因此不能再查看它们。
+- 支持table_rewrite 事件。在表被命令`ALTER TABLE`和`ALTER TYPE`的某些动作重写之前触发。虽然其他控制语句，例如 CLUSTER 和 VACUUM也可以用来重写表，但是它们不会触发table_rewrite 事件。
+
+## 创建事件触发器
+
+**语法格式**
+
+```sql
+CREATE EVENT TRIGGER name
+    ON event [ ON DATABASE | SCHEMA ]
+    [ WHEN filter_variable IN (filter_value [, ... ]) [ AND ... ] ]
+    EXECUTE PROCEDURE function_name()
+
+CREATE EVENT TRIGGER name
+    after Logon|startup ON datbase
+    EXECUTE PROCEDURE function_name()
+
+CREATE EVENT TRIGGER name
+    before Logoff | Shutdown ON datbase
+    EXECUTE PROCEDURE function_name()
+```
+
+**参数说明**
+
+- **name**
+
+  事件触发器名称。在该数据库中这个名称必须唯一。
+
+- **event**
+
+  会触发对给定函数调用的事件名称，分别为 ddl_command_start、ddl_command_end、sql_drop、 table_rewrite。
+
+- **filter_variablet**
+
+  用来过滤事件的变量名称。这可以用来限制触发器只为它支持的那一部分情况引发。当前唯一支持的 filter_variable 是TAG。
+
+- **filter_value**
+
+  与该触发器要为其引发的 filter_variable 相关联的一个值列表。对于TAG这表示一个命令标签列表（例如 DROP FUNCTION）。
+
+- **function_name**
+
+  一个用户提供的函数，它被声明为没有参数并且返回类型 event trigger。
+
+## 修改事件触发器
+
+**语法格式**
+
+```sql
+ALTER EVENT TRIGGER name DISABLE 
+ALTER EVENT TRIGGER name ENABLE [REPLICA  ALWAYS ]
+ALTER EVENT TRIGGER name OWNER TO  {new_owner | CURRENT_USER |SESSION_USER}
+ALTER EVENT TRIGGER name RENAME TO new name
+```
+
+**参数说明**
+
+- **name**
+
+  要修改的现有触发器的名称。
+
+- **new_owner**
+
+  该事件触发器的新拥有者的用户名。
+
+- **new_name**
+
+  该事件触发器的新名称。
+
+- **DISABLE/ENABLE[REPLICA|ALWAYS]TRIGGER**
+
+  该参数用于配置事件事件触发器是否被触发。一个被禁用的触发器对系统来说仍然是可知的，但是当其触发事件发生时却不会执行它。
+
+## 删除事件触发器
+
+**语法格式**
+
+```sql
+DROP EVENT TRIGGER [IF EXISTS ]name [CASCADE | RESTRICT]
+```
+
+**参数说明**
+
+- **IF EXISTS**
+
+  如果该事件触发器不存在则不会抛出一个错误，而是发出一个提示。
+
+- **name**
+
+  要移除的事件触发器的名称。
+
+- **CASCADE**
+
+  自动删除依赖于该触发器的对象，然后删除所有依赖于那些对象的对象。
+
+- **RESTRICT**
+
+  如果有任何对象依赖于该触发器，则拒绝删除它。这是默认值。
+
+## 注意事项
+
+- 不能在一个中止的事务中执行事件触发器（其他函数也一样）。因此，如果一个 DDL 命令出现错误失败，将不会执行任何相关的 ddl_command_end 触发器。反过来，如果一个ddl_command_start 触发器出现错误失败，将不会引发进一步的事件触发器，并且不会尝试执行该命令本身。类似地，如果一个 ddl_command_end 触发器出现错误失败，DDL 命令的效果将被回滚，就像其他包含事务中止的情况中那样。
+- 当一个事件上指定了多个事件触发器，那么当触发该事件相关的事件触发器时，会根据事件触发器的名称的字母序升序方式，来一一调用这些触发器。
+
+## 示例
+
+**示例1：**创建ddl_command_start事件触发器，指定多条命令触发。
+
+1、创建事件触发器函数。
+
+```sql
+CREATE OR REPLACE FUNCTION eth1()
+RETURNS event_trigger
+LANGUAGE plpgsql
+AS $$ BEGIN
+RAISE NOTICE 'test_event_trigger: % %', tg_event, tg_tag;
+END;
+$$;
+```
+
+2、创建事件触发器。
+
+```
+CREATE EVENT TRIGGER estart ON ddl_command_start WHEN TAG IN ('CREATE TABLE','ALTER TABLE','DROP TABLE') EXECUTE PROCEDURE eth1();
+```
+
+3、执行事件触发器中指定命令`CREATE TABLE`。
+
+```sql
+CREATE TABLE  t_eventtr(id int);
+```
+
+结果返回如下：
+
+```sql
+NOTICE:  test_event_trigger: ddl_command_start CREATE TABLE
+CREATE TABLE
+```
+
+4、执行事件触发器中指定命令`ALTER TABLE`。
+
+```sql
+ALTER TABLE t_eventtr RENAME TO t_eventtr_new;
+```
+
+结果返回如下：
+
+```sql
+NOTICE:  test_event_trigger: ddl_command_start ALTER TABLE
+ALTER TABLE
+```
+
+5、执行事件触发器中指定命令`DROP TABLE`。
+
+```sql
+DROP TABLE t_eventtr_new;
+```
+
+结果返回如下：
+
+```sql
+NOTICE:  test_event_trigger: ddl_command_start DROP TABLE
+DROP TABLE
+```
+
+**示例2：**创建ddl_command_end事件触发器。
+
+1、创建事件触发器函数。
+
+```sql
+CREATE OR REPLACE FUNCTION eth1()
+RETURNS event_trigger
+LANGUAGE plpgsql
+AS $$ BEGIN
+RAISE NOTICE 'test_event_trigger: % %', tg_event, tg_tag;
+END;
+$$;
+```
+
+2、创建测试表t_eventtr。
+
+```sql
+CREATE TABLE t_eventtr(id int);
+```
+
+3、创建事件触发器。
+
+```sql
+CREATE EVENT TRIGGER eend ON ddl_command_end EXECUTE PROCEDURE  eth1();
+```
+
+4、删除测试表t_eventtr。
+
+```sql
+DROP TABLE t_eventtr;
+```
+
+结果返回如下：
+
+```sql
+NOTICE:  test_event_trigger: ddl_command_end DROP TABLE
+DROP TABLE
+```
+
+**示例3：**创建sql_drop事件触发器。
+
+1、创建事件触发器函数。
+
+```sql
+CREATE OR REPLACE FUNCTION test_event_trigger_drop()
+RETURNS event_trigger LANGUAGE plpgsql AS $$
+DECLARE
+obj record;
+BEGIN
+FOR obj IN SELECT * FROM pg_event_trigger_dropped_objects()
+LOOP
+RAISE NOTICE '% dropped object: % %.% %',
+tg_tag,
+obj.object_type,
+obj.schema_name,
+obj.object_name,
+obj.object_identity;
+END LOOP;
+END;
+$$;
+```
+
+2、创建测试表t_eventtr。
+
+```sql
+CREATE TABLE t_eventtr(id int);
+```
+
+3、创建事件触发器edrop。
+
+```sql
+CREATE EVENT TRIGGER edrop ON sql_drop EXECUTE PROCEDURE test_event_trigger_drop();
+```
+
+4、删除表t_eventtr。
+
+```sql
+DROP TABLE t_eventtr;
+```
+
+结果返回如下：
+
+```sql
+NOTICE:  DROP TABLE dropped object: table public.t_eventtr public.t_eventtr
+NOTICE:  DROP TABLE dropped object: type public.t_eventtr public.t_eventtr
+NOTICE:  DROP TABLE dropped object: type public._t_eventtr public.t_eventtr[]
+DROP TABLE
+```
+
+**示例4：**创建table_rewrite事件触发器。
+
+1、创建事件触发器函数。
+
+```sql
+CREATE OR REPLACE FUNCTION eth1()
+RETURNS event_trigger
+LANGUAGE plpgsql
+AS $$ BEGIN
+RAISE NOTICE 'test_event_trigger: % %', tg_event, tg_tag;
+END;
+$$;
+```
+
+2、创建事件触发器。
+
+```sql
+CREATE EVENT TRIGGER erewrite ON table_rewrite EXECUTE PROCEDURE eth1();
+```
+
+**示例5：**修改事件触发器。
+
+1、创建事件触发器函数。
+
+```sql
+CREATE OR REPLACE FUNCTION eth1() RETURNS event_trigger AS $$ BEGIN RAISE NOTICE 'test_event_trigger: % %',tg_event,tg_tag; END $$ LANGUAGE plpgsql;
+```
+
+2、创建事件触发器。
+
+```sql
+CREATE EVENT TRIGGER logon_event_trigger AFTER logon ON database EXECUTE PROCEDURE eth1();
+```
+
+3、执行以下语句修改事件触发器名称。
+
+```sql
+ALTER EVENT TRIGGER logon_event_trigger RENAME TO test_eventtri_new;
+```
+
+4、系统表中查询改名后的事件触发器。
+
+```sql
+SELECT * FROM pg_event_trigger WHERE evtname = 'test_eventtri_new';
+```
+
+结果返回如下：
+
+```sql
+      evtname      | evtevent | evtowner | evtfoid | evtenabled | isschema | evttags
+-------------------+----------+----------+---------+------------+----------+---------
+ test_eventtri_new | logon    |       10 |   18586 | O          | f        |
+(1 row)
+```
+
+**示例6：**创建Logon/Logoff系统事件触发器。
+
+1、创建测试表test2。
+
+```sql
+create table test2(id int,col timestamp);
+```
+
+2、创建触发器函数eth3()和eth4()。
+
+```sql
+CREATE OR REPLACE FUNCTION eth3()
+RETURNS event_trigger
+LANGUAGE plpgsql
+AS $$ BEGIN
+insert into test2 values(1,systimestamp);
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION eth4()
+RETURNS event_trigger
+LANGUAGE plpgsql
+AS $$ BEGIN
+insert into test2 values(2,systimestamp);
+END;
+$$;
+```
+
+3、创建Logon/Logoff事件触发器。
+
+```sql
+CREATE EVENT TRIGGER logon_eventtri after Logon ON database EXECUTE PROCEDURE eth3();
+CREATE EVENT TRIGGER logoff_eventtri before Logoff ON database EXECUTE PROCEDURE eth4();
+```
+
+4、退出数据库重新登陆。
+
+```sql
+\q
+```
+
+退出后在命令行执行登陆命令。
+
+```shell
+vsql -r
+```
+
+5、查询test2中记录的Logon/Logoff事件。
+
+```sql
+SELECT * FROM test2;
+```
+
+结果返回如下：
+
+```sql
+ id |         col
+----+---------------------
+  2 | 2023-02-16 11:39:30
+  1 | 2023-02-16 11:39:32
+(2 rows)
+```
+

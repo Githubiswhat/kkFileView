@@ -1,0 +1,56 @@
+### 宏变量
+
+**功能描述**
+
+系统提供的宏变量包括dbtimezone,sessiontimezone和systimestamp。
+
+- dbtimezone：返回数据库时区。
+- sessiontimezone：返回会话时区。
+- systimestamp：返回本机数据库上当前系统日期和时间，精确到毫秒。
+
+**示例**
+
+- dbtimezone
+
+```
+select dbtimezone;
+```
+
+返回结果为：
+
+```
+ dbtimezone
+------------
+ PRC
+(1 row)
+```
+
+- sessiontimezone
+
+```
+select sessiontimezone;
+```
+
+返回结果为：
+
+```
+ sessiontimezone
+-----------------
+ PRC
+(1 row)
+```
+
+- systimestamp
+
+```
+select systimestamp;
+```
+
+返回结果为：
+
+```
+       sysdate
+---------------------
+ 2022-07-01 16:43:47
+(1 row)
+```

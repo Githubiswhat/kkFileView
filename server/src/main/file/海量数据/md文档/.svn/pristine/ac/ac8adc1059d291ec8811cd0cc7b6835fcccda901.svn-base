@@ -1,0 +1,4 @@
+# SQL语法
+
+本章主要介绍Vastbase G100兼容Oracle的SQL语法。
+

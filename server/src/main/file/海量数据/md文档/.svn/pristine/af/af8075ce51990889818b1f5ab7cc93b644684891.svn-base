@@ -1,0 +1,98 @@
+#### 数据存储加密
+
+**功能描述**
+
+Vastbase数据库采用软加密方式实现数据加密功能，当用户向数据库中写入数据时，数据自动加密；当用户从数据库中查询数据时，数据被自动解密。建议开启存储加密功能，防止数据泄露。
+
+**注意事项**
+
+- 若需要使用gs_encrypt，key需要指定为3种类型的字符，且长度要为16。
+
+- initdb时可使用--algothim指定加密算法。若使用非安全加密算法，可能存在安全风险，推荐使用安全加密算法，如：AES128。
+
+- 目前支持两种国密算法，分别是：SM4-CTR-128和AES-CTR-128，默认支持的是AES-CTR-128。
+
+**示例**
+
+1、对密钥进行base64编码，生成存储加密密钥。
+
+```
+echo -n "12345abcde@ABCDE"|base64
+```
+
+结果显示如下：
+
+```
+MTIzNDVhYmNkZUBBQkNERQ==
+```
+
+生成主密钥。
+
+```
+echo -n "23456abcde@ABCDE"|base64
+```
+
+结果显示如下：
+
+```
+MjM0NTZhYmNkZUBBQkNERQ==
+```
+
+2、初始化实例（-K指定存储加密密钥，--masterkey指定主密钥）。
+
+```
+vb_initdb -D testdb --nodename='testdb' --algorithm=SM4-CTR-128 -K MTIzNDVhYmNkZUBBQkNERQ== --masterkey=MjM0NTZhYmNkZUBBQkNERQ==
+```
+
+3、配置密钥。
+
+```
+gs_encrypt -v ABCDEFGHIJKLMNOP -B MTIzNDVhYmNkZUBBQkNERQ== TRANS_ENCRYPT_SAMPLE_STRING
+```
+
+4、将上一步结果写入配置文件中。
+
+```
+Transparent_encrypted_string='上一步的结果'
+```
+
+5、启动实例。
+
+```
+在出现提示“please input the master key:”时，输入masterkey：MjM0NTZhYmNkZUBBQkNERQ==
+```
+
+6、vsql登录数据库，修改初始化用户密码。
+
+```
+alter user vastbase password 'Aa123456';
+```
+
+创建表并插入数据。
+
+```
+create table test_pwd (id int,name text);
+insert into test_pwd values (1,'加密');
+```
+
+查询表中数据。
+
+```
+select * from test_pwd;
+```
+
+当结果显示如下信息，则表示数据插入成功。
+
+```
+ id | name 
+----+------
+ 1 | 加密
+(1 row)
+```
+
+7、进入数据目录（$PGDATA/base/）使用如下命令查看是否加密成功，没返回则表示加密成功。
+
+```
+grep -iR '加密' 
+```
+

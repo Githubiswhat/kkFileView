@@ -1,0 +1,3 @@
+####  DBA_IND_PARTITIONS
+
+DBA_IND_PARTITIONS视图存储数据库中所有索引分区的信息。该视图中的字段与ALL_IND_PARTITIONS相同。具体请参考章节“ALL_IND_PARTITIONS”。

@@ -1,0 +1,9 @@
+# 兼容性手册
+
+本手册详细介绍了Vastbase G100数据库兼容的特性，包括函数、语法、数据类型等方面。通过介绍功能并给出具体示例，指导用户了解和使用相关内容。
+
+<a href="Oracle兼容性.html"><li>**Oracle兼容性**</li></a>
+
+<a href="MySQL兼容性.html"><li>**MySQL兼容性**</li></a>
+
+<a href="PostgreSQL兼容性.html"><li>**PostgreSQL兼容性**</li></a>

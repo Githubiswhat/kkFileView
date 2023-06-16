@@ -1,0 +1,106 @@
+# 匿名块中支持占位符作为赋值表达式左值
+
+## 功能描述
+
+Vastbase G100在Oracle兼容模式下支持PL/SQL在匿名块中使用占位符作为赋值表达式左值。
+
+## 语法格式
+
+```sql
+:占位符 := value;
+```
+
+## 参数说明
+
+**value**
+
+占位符的值或表达式。
+
+## 注意事项
+
+- 该功能仅在数据库兼容模式为Oracle时能够使用（即创建DB时DBCOMPATIBILITY='A'），在其他数据库兼容模式下不能使用该特性。
+
+- SQL语句的占位符使用英文冒号“:”开头。 
+
+## 示例
+**前置条件：**
+
+- 创建并切换至兼容模式为Oracle的数据库下。
+
+  ```sql
+  create  database dbtest  dbcompatibility 'A';
+  \c dbtest;
+  ```
+
+- 设置serveroutput 为on（允许将dbms_output.put_line的输出信息输出至vsql的命令界面的屏幕上）。
+
+  ```sql
+  set serveroutput =on;
+  ```
+
+
+
+**示例1：**占位符作为赋值表达式左值，表达式为系统自带函数。
+
+1、创建函数。
+
+```sql
+create or replace FUNCTION f1(var in number) return number is
+l_var varchar(10) :='2022-12-28' ;
+l_res number ;
+BEGIN
+execute immediate 'begin :result := year(:2); end;' using out l_res,l_var;
+dbms_output.put_line(l_res);
+return var;
+end;
+/
+```
+
+函数创建成功后，调用函数。
+
+```sql
+call f1(1);
+```
+
+调用函数成功，返回结果为：
+
+```sql
+ f1
+----
+  1
+(1 row)
+```
+
+**示例2：**用占位符作为赋值表达式左值，赋值为null。
+
+1、创建函数。
+
+```sql
+create or replace FUNCTION f1(var in number) return number is
+BEGIN
+return null;
+end;
+/
+```
+
+2、创建匿名块。在匿名块中使用占位符作为赋值表达式左值，赋值为null并输出结果。
+
+```sql
+declare
+l_var number :=1;
+l_res text;
+l_funname varchar2(20) := 'f1';
+begin
+execute immediate 'begin :result := ' || l_funname || '(:2); end;' using out l_res, l_var;
+dbms_output.put_line(l_res);
+end;
+/
+```
+
+匿名块创建成功，返回结果为：
+
+```sql
+ANONYMOUS BLOCK EXECUTE
+```
+
+输出结果为空。

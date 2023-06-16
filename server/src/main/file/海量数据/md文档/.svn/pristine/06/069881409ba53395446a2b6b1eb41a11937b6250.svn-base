@@ -1,0 +1,38 @@
+##### 词典测试
+
+**功能描述**
+
+函数ts_lexize用于进行词典测试。
+
+**注意事项**
+
+ts_lexize(dict regdictionary, token text) returns text[]如果输入的token可以被词典识别，那么ts_lexize返回词素的数组；如果token可以被词典识别到它是一个停用词，则返回空数组；如果是一个不可识别的词则返回NULL。
+
+**示例**
+
+```
+ SELECT ts_lexize('english_stem', 'stars'); 
+```
+
+结果返回如下： 
+
+```
+ts_lexize 
+----------- 
+ {star} 
+```
+
+查询不可识别值。
+
+```
+SELECT ts_lexize('english_stem', 'a'); 
+```
+
+结果返回如下： 
+
+```
+ts_lexize 
+----------- 
+ {}
+```
+

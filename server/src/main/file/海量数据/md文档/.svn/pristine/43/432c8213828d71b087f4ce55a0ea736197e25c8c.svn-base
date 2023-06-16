@@ -1,0 +1,37 @@
+#### 逻辑内存管理模块
+
+**功能描述**
+
+设置enable_memory_limit为true，即启用内存管理模块，可用于限制进程的内存使用。当其他参数配置不满足数据库启动条件时，则启动失败，并给出提示。
+
+**操作方法**
+
+- 设置enable_memory_limit为true：
+
+```
+[vastbase@localhost  vastbase]$  vi  postgresql.conf
+enable_memory_limit  =  true
+[vastbase@localhost  vastbase]$  vb_ctl  restart
+```
+
+- 设置enable_memory_limit为false：
+
+```
+[vastbase@localhost vastbase]$ vi postgresql.conf
+enable_memory_limit = false
+[vastbase@localhost vastbase]$ vb_ctl restart
+```
+
+**注意事项**
+
+- 用户设置enable_memory_limit=true，但其他参数配置不满足条件，则数据库启动失败，并提示原因：
+
+```
+“the values of memory out of limit，the database failed to be started，please modify parameters value of 'max_process_memory、cstore_buffers、UDFWorkerMemHardLimit、shared_buffers、max_pred_locks_per_transaction、max_connections' “
+```
+
+- 如果用户设置enable_memory_limit=false, 启动成功并且提示风险：
+
+```
+“The parameter value of enable_memory_limit is false, there is a risk of database downtime due to memory depletion“
+```

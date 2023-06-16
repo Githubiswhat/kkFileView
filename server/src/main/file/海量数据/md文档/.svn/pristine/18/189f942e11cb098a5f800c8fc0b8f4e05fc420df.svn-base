@@ -1,0 +1,163 @@
+# 字符类型
+
+Vastbase支持的字符类型请参见[表1](https://docs.vastdata.com.cn/zh/docs/VastbaseG100Ver2.2.10/doc/开发者指南/字符类型.html#zh-cn_topic_0283136755_zh-cn_topic_0237121950_zh-cn_topic_0059777889_zh-cn_topic_0058966269_table29186418)。字符串操作符和相关的内置函数请参见[字符处理函数和操作符](https://docs.vastdata.com.cn/zh/docs/VastbaseG100Ver2.2.10/doc/开发者指南/字符处理函数和操作符.html)。
+
+**表 1** 字符类型
+
+<table>
+    <tr>
+    <th>名称</th>
+    <th>描述</th>
+    <th>存储空间</th>
+    </tr>
+    <tr>
+    <td>CHAR(n)CHARACTER(n)NCHAR(n)</td>
+    <td>定长字符串，不足补空格。n是指字节长度，如不带精度n，默认精度为1。</td>
+    <td>最大为10MB。</td></tr>
+    <tr>
+    <td>VARCHAR(n)CHARACTER VARYING(n)</td>
+    <td>定长字符串，不足补空格。n是指字节长度，如不带精度n，默认精度为1。</td>
+    <td>最大为10MB。</td>
+    </tr>
+    <tr>
+    <td>VARCHAR2(n)</td>
+    <td>变长字符串。是VARCHAR(n)类型的别名。n是指字节长度。</td>
+    <td>最大为10MB。</td></tr>
+    <tr>
+    <td>NVARCHAR2(n)</td>
+    <td>变长字符串。n是指字符长度。</td>
+    <td>最大为10MB。</td></tr>
+	<tr>
+<td>NVARCHAR(n)</td>
+    <td>变长字符串。是NVARCHAR2(n)类型的别名。n是指字符长度。</td>
+    <td>最大为10MB。</td></tr>
+    <tr>
+    <td>TEXT</td>
+    <td>变长字符串。</td>
+    <td>最大为1GB-1，但还需要考虑到列描述头信息的大小， 以及列所在元组的大小限制（也小于1GB-1），因此TEXT类型最大大小可能小于1GB-1。</td></tr>
+    <tr>
+    <td>CLOB</td>
+    <td>文本大对象。是TEXT类型的别名。</td>
+    <td>最大为1GB-1，但还需要考虑到列描述头信息的大小， 以及列所在元组的大小限制（也小于1GB-1），因此CLOB类型最大大小可能小于1GB-1。</td></tr>
+    <tr>
+    <td>bpchar</td>
+    <td colspan="2">无具体含义，是varchar类型的别名</td></tr>
+</table>
+
+
+
+> <div align="left"><img src="image/image1.png" style="zoom:25%")</div> 
+>
+> - 除了每列的大小限制以外，每个元组的总大小也不可超过1GB-1字节，主要受列的控制头信息、元组控制头信息以及元组中是否存在NULL字段等影响。
+> - NCHAR为bpchar类型的别名，NCHAR(n)为bpchar(n)类型的别名。
+> - 超过1GB的clob只有dbe_lob相关高级包支持，系统函数不支持大于1GBclob。
+
+在Vastbase里另外还有两种定长字符类型。在[表2](https://docs.vastdata.com.cn/zh/docs/VastbaseG100Ver2.2.10/doc/开发者指南/字符类型.html#zh-cn_topic_0283136755_zh-cn_topic_0237121950_zh-cn_topic_0059777889_tf74658686f5e4d979adf0ac04769ea16)里显示。name类型只用在内部系统表中，作为存储标识符，不建议普通用户使用。该类型长度当前定为64字节（63可用字符加结束符）。类型“char”只用了一个字节的存储空间。他在系统内部主要用于系统表，主要作为简单化的枚举类型使用。
+
+**表 2** 特殊字符类型
+
+| 名称   | 描述                   | 存储空间 |
+| :----- | :--------------------- | :------- |
+| name   | 用于对象名的内部类型。 | 64字节。 |
+| “char” | 单字节内部类型。       | 1字节。  |
+
+## 示例
+
+**示例1：**创建数据类型为CHARACTER()的字段。
+
+1、创建表。
+
+```
+ CREATE TABLE char_type_t1 
+(
+    CT_COL1 CHARACTER(4)
+);
+```
+
+2、插入数据。
+
+```
+vastbase=# INSERT INTO char_type_t1 VALUES ('ok');
+```
+
+3、查询表中的数据。
+
+```
+SELECT ct_col1, char_length(ct_col1) FROM char_type_t1;
+```
+
+ 结果返回如下：
+
+```
+ct_col1 | char_length 
+---------+-------------
+ ok      |           4
+(1 row)
+```
+
+4、删除表。
+
+```
+DROP TABLE char_type_t1;
+```
+
+**示例2：**创建数据类型为VARCHAR()的字段
+
+1、创建表。
+
+```
+ CREATE TABLE char_type_t2  
+(
+    CT_COL1 VARCHAR(5)
+);
+```
+
+2、插入数据。
+
+```
+INSERT INTO char_type_t2 VALUES ('ok');
+INSERT INTO char_type_t2 VALUES ('good');
+```
+
+3、插入的数据长度超过类型规定的长度报错。
+
+```
+INSERT INTO char_type_t2 VALUES ('too long');
+```
+
+结果返回如下：
+
+```
+ERROR:  value too long for type character varying(5)
+CONTEXT:  referenced column: ct_col1
+```
+
+4、明确类型的长度，超过数据类型长度后会自动截断。
+
+```
+INSERT INTO char_type_t2 VALUES ('too long'::varchar(5));
+```
+
+5、查询数据。
+
+```
+SELECT ct_col1, char_length(ct_col1) FROM char_type_t2;
+```
+
+结果返回如下：
+
+```
+ ct_col1 | char_length 
+---------+-------------
+ ok      |           2
+ good    |           4
+ too l   |           5
+(3 rows)
+```
+
+6、删除数据。
+
+```
+DROP TABLE char_type_t2;
+```
+

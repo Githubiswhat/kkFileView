@@ -1,0 +1,120 @@
+### 函数与存储过程传入参数与查询字段同名
+
+**功能描述**
+
+允许存储过程和函数传入参数和逻辑代码中查询的字段重名。
+
+**语法格式**
+
+- 函数创建
+
+```
+create or replace function 函数名（参数1 模式 数据类型，......）return 数据类型
+```
+
+- 存储过程创建
+
+```
+create or replace function 过程名（参数1 模式 数据类型，......）
+```
+
+**注意事项**
+
+- 在查询的select部分，如果遇到表字段和传入的参数同名的情况，仍然按照表字段进行查询。
+- 在查询的select部分，如果遇到表字段不和传入的参数同名，则查询出传入参数值。
+- 该功能仅在数据库兼容模式为Oracle时能够使用（即创建DB时DBCOMPATIBILITY='A'），在其他数据库兼容模式下不能使用该特性。
+
+**示例**
+
+1、创建并切换至兼容Oracle的库db_oracle。
+
+```
+CREATE DATABASE db_oracle dbcompatibility='A';
+\c db_oracle
+```
+
+2、清除测试用表。
+
+```
+drop table if exists t1;
+drop table if exists t2;
+```
+
+3、开启dbms_output功能。
+
+```
+set serveroutput on;
+```
+
+4、新建测试用表并插入数据（表t1与函数有重名字段id，表t2与函数没有重名字段）。
+
+```
+create table t1(id number, name varchar2(200));
+Insert into t1 values(1,'a1');
+create table t2(val number, name varchar2(200));
+Insert into t2 values(1,'a1');
+```
+
+5、创建函数。
+
+```
+create or replace function func(id number) return number
+as
+v_id1 number;
+v_id2 number;
+v_col1 varchar2(100);
+v_col2 varchar2(100);
+begin
+select id,name into v_id1, v_col1 from t1 where id = 1;
+select id,name into v_id2, v_col2 from t2 where id = 2;
+dbms_output.put_line('id: ' || id);
+dbms_output.put_line('v_id1: ' || v_id1);
+dbms_output.put_line('v_col1: ' || v_col1);
+dbms_output.put_line('v_id2: ' || v_id2);
+dbms_output.put_line('v_col2: ' || v_col2);
+return 0;
+end;
+/
+```
+
+6、调用函数输入参数为1。
+
+```
+select func(1) from dual;
+```
+
+返回结果为：
+
+```
+id: 1
+v_id1: 1
+v_col1: a1
+v_id2:
+v_col2:
+ func
+------
+    0
+(1 row)
+```
+
+7、调用函数输入参数为2。
+
+```
+select func(2) from dual;
+```
+
+返回结果为：
+
+```
+id: 2
+v_id1: 1
+v_col1: a1
+v_id2: 2
+v_col2: a1
+ func
+------
+    0
+(1 row)
+```
+
+###  

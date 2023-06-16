@@ -1,0 +1,3 @@
+#### DBA_PART_KEY_COLUMNS
+
+DBA_PART_KEY_COLUMNS视图提供所有用户的数据库中的分区表的分区键列的信息。视图中的字段与ALL_PART_KEY_COLUMNS相同。具体请参考章节“ALL_PART_KEY_COLUMNS”。

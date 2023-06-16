@@ -1,0 +1,85 @@
+##### 管理员
+
+**初始用户**
+
+Vastbase安装过程中自动生成的帐户称为初始用户。初始用户也是系统管理员，拥有系统的最高权限，能够执行所有的操作。该帐户与进行Vastbase安装的操作系统用户同名。
+
+初始用户会绕过所有权限检查。建议仅将此初始用户作为DBA管理用途，而非业务应用。
+
+**系统管理员**
+
+系统管理员是指具有SYSADMIN属性的帐户，默认安装情况下具有与对象所有者相同的权限，但不包括dbe_perf模式的对象权限。
+
+要创建新的系统管理员，请以初始用户或者系统管理员用户身份连接数据库，并使用带SYSADMIN选项的CREATE USER语句或 ALTER USER语句进行设置。
+
+```
+CREATE USER sysadmin WITH SYSADMIN password "Bigdata@123";
+```
+
+或者
+
+```
+ALTER USER joe SYSADMIN;
+```
+
+ALTER USER时，要求用户已存在。
+
+**监控管理员**
+
+监控管理员是指具有MONADMIN属性的帐户，具有查看dbe_perf模式下视图和函数的权限，亦可以对dbe_perf模式的对象权限进行授予或收回。
+
+要创建新的监控管理员，请以系统管理员身份连接数据库，并使用带MONADMIN选项的CREATE USER语句或ALTER USER语句进行设置。
+
+```
+CREATE USER monadmin WITH MONADMIN password "xxxxxxxxx";
+```
+
+或者
+
+```
+ALTER USER joe MONADMIN;
+```
+
+ALTER USER时，要求用户已存在。
+
+**运维管理员**
+
+运维管理员是指具有OPRADMIN属性的帐户，具有使用Roach工具执行备份恢复的权限。
+
+要创建新的运维管理员，请以初始用户身份连接数据库，并使用带OPRADMIN选项的CREATE USER语句或ALTER USER语句进行设置。
+
+```
+CREATE USER opradmin WITH OPRADMIN password "xxxxxxxxx";
+```
+
+或者
+
+```
+ALTER USER joe OPRADMIN;
+```
+
+ALTER USER时，要求用户已存在。
+
+**安全策略管理员**
+
+安全策略管理员是指具有POLADMIN属性的帐户，具有创建资源标签、脱敏策略和统一审计策略的权限。
+
+要创建新的安全策略管理员，请以系统管理员用户身份连接数据库，并使用带POLADMIN选项的CREATE USER语句或ALTER USER语句进行设置。
+
+```
+CREATE USER poladmin WITH POLADMIN password "xxxxxxxxx";
+```
+
+或者
+
+```
+ALTER USER joe POLADMIN;
+```
+
+ALTER USER时，要求用户已存在。
+
+> <div align="left"><img src="image/image2.png" style="zoom:20%")</div>
+>
+> 三个管理员，即系统管理员（vbadmin)、安全管理员（vbsso)、审计管理员（vbaudit），无论通过何种方式初始化数据库实例，在初始化实例时，随机生成管理员口令，口令生成后，打印输出。
+>
+> 在三个管理员首次登录时，必须修改口令方可进行正常操作，新密码要符合密码复杂度要求。

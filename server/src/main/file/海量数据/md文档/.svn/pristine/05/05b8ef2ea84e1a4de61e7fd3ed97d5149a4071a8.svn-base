@@ -1,0 +1,3 @@
+#### DBA_TAB_PARTITIONS
+
+DBA_TAB_PARTITIONS视图提供所有用户的数据库中的所有分区的信息。视图中的字段与ALL_TAB_PARTITIONS相同。具体请参考章节“ALL_TAB_PARTITIONS”。

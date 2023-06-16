@@ -1,0 +1,87 @@
+#### 设置保留字（关键字）可以作为字段名或别名
+
+**功能描述**
+
+为了兼容更多的主流数据库，Vastbase关键字较多。应用系统数据从其他数据库迁移到Vastbase时可能会遇到表名、字段名等是Vastbase的关键字，从而导致查询报错的情况。因此，可以选择屏蔽部分Vastbase的关键字，以达到关键字可以作为字段名或别名等兼容场景的目的。
+
+**参数说明**
+
+- vb_exclude_reserved_words可以设置多个关键字，用“,”隔开，设置后重启数据库生效。
+- 参数级别为PG_POSTMASTER。
+
+**注意事项**
+
+某些关键字对于系统的正常运行非常重要，例如“select”。因此，这类关键字即使设置到系统参数vb_exclude_reserved_words中，也不会真正生效。下表列出了在vb_exclude_reserved_words参数中不会生效的关键字：
+
+| -              | -                 | -        | -         | -        |
+| -------------- | ----------------- | -------- | --------- | -------- |
+| all            | column            | fetch    | null      | varchar2 |
+| analyze        | connect           | float    | number    | when     |
+| and            | constraint        | for      | numeric   | where    |
+| any            | create            | from     | nvl       | with     |
+| array          | csn               | grant    | offset    |          |
+| as             | current_catalog   | group    | on        |          |
+| asc            | current_date      | grouping | or        |          |
+| between        | current_role      | having   | order     |          |
+| bigint         | current_schema    | in       | primary   |          |
+| binary         | current_time      | inner    | prior     |          |
+| binary_double  | current_timestamp | int      | procedure |          |
+| binary_integer | current_user      | integer  | rownuw    |          |
+| bit            | date              | interval | select    |          |
+| boolean        | decimal           | into     | table     |          |
+| case           | default           | is       | then      |          |
+| char           | desc              | like     | timestamp |          |
+| character      | distinct          | limit    | union     |          |
+| check          | else              | minus    | user      |          |
+| collate        | end               | modify   | values    |          |
+| collation      | exists            | not      | varchar   |          |
+
+注：关键字被屏蔽后，相关关键字语法将同步失效。
+
+**示例**
+
+1、在操作系统命令行设置参数。
+
+```
+vi postgresql.conf
+添加以下参数：vb_exclude_reserved_words='select,replace'
+```
+
+2、重启数据库生效。
+
+```
+vb_ctl restart
+```
+
+3、连接数据库。
+
+4、查看屏蔽关键字。
+
+```
+show vb_exclude_reserved_words;
+```
+
+结果显示如下：
+
+```
+vb_exclude_reserved_words 
+---------------------------
+ select,replace
+(1 row)
+```
+
+ replace可作为字段别名，select关键字依旧生效。
+
+```
+select 1 replace;
+```
+
+结果返回如下： 
+
+```
+replace 
+---------
+    1
+(1 row)
+```
+

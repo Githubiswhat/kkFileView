@@ -1,0 +1,350 @@
+# 审计密钥管理和加密运算
+
+## 功能描述
+
+Vastbase G100支持审计使用硬件密码卡的密钥管理和加密运算，并产生审计数据。密钥管理和加密运算使用光电安辰密码卡实现。
+
+## 注意事项
+
+- 本功能仅在Vastbase G100 2.2 Build 12及以后版本支持使用。
+- 本功能需要与光电安辰加密卡配合使用。
+
+## 背景信息
+
+审计的密码卡功能如下：
+
+- 内置函数提供密码卡产生随机数的功能并增加审计。
+
+  函数名：cryptocard_gen_random()
+
+  语法格式：
+
+  ```sql
+  cryptocard_gen_random(len)
+  ```
+
+  审计类型：crypt_operation
+
+  审计详情信息：generate random success/failed,algorithm:NULL
+
+- 内置函数提供密码卡计算数据摘要的功能并增加审计。
+
+  函数名：cryptocard_hash()
+
+  语法格式：
+
+  ```sql
+  cryptocard_hash(data_1,algorithm)
+  ```
+
+  审计类型：crypt_operation
+
+  审计详情信息：hash operation success/failed,algorithm:sm3
+
+- 内置函数提供密码卡生成数据签名的功能并增加审计。
+
+  函数名：cryptocard_ecc_sign()
+
+  语法格式：
+
+  ```sql
+  cryptocard_ecc_sign(data_2,keyidx.pucpwd)
+  ```
+
+  审计类型：crypt_operation
+
+  审计详情信息：data signature success/failed,algorithm:sm2
+
+- 内置函数提供密码卡签名校验的功能并增加审计。
+
+  函数名：cryptocard_ecc_verify()
+
+  语法格式：
+
+  ```sql
+  cryptocard_ecc_verify(data_2,keyidx,pucpwd,rvalue,svalue)
+  ```
+
+  审计类型：crypt_operation
+
+  审计详情信息：signature  verification success/failed,algorithm:sm2
+
+- 内置函数提供密码卡数据加密的功能并增加审计。
+
+  函数名：cryptocard_encrypt()
+
+  语法格式：
+
+  ```sql
+  cryptocard_encrypt(data_3,algorithm_2,key,iv)
+  ```
+
+  审计类型：crypt_operation
+
+  审计详情信息：encryption success/failed,algorithm:sm4
+
+- 内置函数提供密码卡数据解密的功能并增加审计。
+
+  函数名：cryptocard_decrypt()
+
+  语法格式：
+
+  ```sql
+  cryptocard_decrypt(data_4,algorithm_2,key,iv)
+  ```
+
+  审计类型：crypt_operation
+
+  审计详情信息：decryption success/failed,algorithm:sm4
+
+- 新增密钥协商审计，SSL连接成功时，如果加密套件使用密钥协商则增加审计信息。
+
+  审计类型：crypt_operation
+
+  审计详情信息：ECDH success,cipher info(密钥信息)
+
+## 参数说明
+
+- **len**
+
+  要产生的随机数的长度。
+
+  取值范围：1~1024，其中1和1024可取。
+
+- **data_1**
+
+  计算摘要的数据。
+
+- **data_2**
+
+  产生签名的数据。
+
+  取值范围：要求数据长度为32字节。
+
+- **data_3**
+
+  数据明文。
+
+- **data_4**
+
+  数据密文。
+
+- **algorithm_1**
+
+  算法名。
+
+  取值范围：目前仅支持sm3。
+
+- **algorithm_2**
+
+  加密算法名
+
+  取值范围：目前仅支持sm4。
+
+- **keyidx**
+
+  密码卡内部签名密钥对的索引。
+
+  取值范围：目前仅支持sm2密钥对。
+
+- **pucpwd**
+
+  签名密钥的私钥访问控制码。
+
+  取值范围：密码卡上创建密钥时，由用户指定的控制码。
+
+- **rvaue**
+
+  数据签名中的r值，cryptocard_ecc_sign函数会输出此值。
+
+- **svalue**
+
+  数据签名中的s值，cryptocard_ecc_sign函数会输出此值。
+
+- **key**
+
+  密钥
+
+  取值范围：长度为16的字符串。
+
+- **iv**
+
+  取值范围：长度为16的字符串。
+
+## 操作步骤
+
+**前置条件：**所在服务器已安装配置广电安辰密码卡。
+
+1、将获取到的动态库so文件放至$GAUSSHOME/lib目录下。
+
+2、修改配置配置文件参数。
+
+```shell
+vi $PGDATA/postgresql.conf
+use_crypto=on
+```
+
+3、启动数据库并登录数据库。
+
+4、开启审计参数。
+
+```sql
+alter system set audit_enabled=on
+```
+
+5、调用内置函数。
+
+- 密码卡产生随机数。
+
+  ```sql
+  select cryptocard_gen_random(2);
+  ```
+
+  结果显示为：
+
+  ```sql
+  cryptocard_gen_rasndom
+  ------------------------
+  4Kc=
+  
+  (1 rows)
+  ```
+
+- 密码卡计算数据摘要。
+
+  ```sql
+  select cryptocard_hash(1234567,'sm3');
+  ```
+
+  结果显示为：
+
+  ```sql
+         cryptocard_hash
+  -----------------------------------------------
+  axSfng41J17cDvSUGfEBA4S0N62Sc4hZjvWUm5Gwx2Y=
+  
+  (1 rows)
+  ```
+
+- 密码卡生成数据签名。
+
+  > <div align="left"><img src="image/img2.png" style="zoom:75%"></div>
+  >
+  > 前提条件为：已通过密码卡创建签名密钥对，并记录密钥索引和签名私钥的私钥访问控制码。
+
+  ```sql
+  select cryptocard_ecc_sign('abcdefghigklmnopabcdefghigklmnop','001','Aa123456');
+  ```
+
+  结果显示为：
+
+  ```sql
+  cryptocard_ecc_sign
+  ------------------------------
+  R_VALUE:cl6cqoorWCTc5qY2bPvUdhz7g30goKMB7YijDAlLhiU=,S_VALUE:FBCg/IkG80wXuqzDbGiT+69C2wjpaB2NPCVc1R3FLMo=
+  ```
+
+- 密码卡签名校验。
+
+  ```sql
+  select cryptocard_ecc_verify('abcdefghigklmnopabcdefghigklmnop','001','Aa123456','签名返回的R值','签名返回的S值');
+  ```
+
+  > <div align="left"><img src="image/img2.png" style="zoom:75%"></div>
+  >
+  > - 当cryptocard_ecc_verify函数入参中签名返回的R值，签名返回的S值与密码卡生成数据签名时调用的函数cryptocard_ecc_sign的返回的R_VALUE、S_VALUE后跟的值一一对应，则校验结果为t；
+  > - 签名返回的R值、 签名返回的S值与cryptocard_ecc_sign的返回的R_VALUE、S_VALUE后跟的值不对应，则校验结果为f。
+
+- 密码卡数据加密。
+
+  ```sql
+  select cryptocard_encrypt(1234567890,'sm4','1234567890123456','abcdefghigklmnop');
+  ```
+
+  结果显示为：
+
+  ```sql
+  cryptocard_encrypt
+  ---------------------
+  4xf+A9ZI8I7WVQ==
+  
+  (1 rows)
+  ```
+
+- 密码卡数据解密。
+
+  ```sql
+  select cryptocard_decrypt('加密得到的密文','sm4','1234567890123456','abcdefghigklmnop');
+  ```
+
+  > <div align="left"><img src="image/img2.png" style="zoom:75%"></div>
+  >
+  > 加密得到的结果是指用加密卡进行数据加密，即使用cryptocard_encrypt函数加密得到的结果。本例以明文为1234567890为例，加密后得到密文为4xf+A9ZI8I7WVQ==。
+
+  结果展示为：
+
+  ```sql
+  cryptocard_decrypt
+  ------------------
+  1234567890
+  
+  (1 rows)
+  ```
+
+6、查看审计日志
+
+```sql
+\x --列式展示查询结果
+select * from pg_query_audit(now()-0.001,now()) where type='crypt_operation';
+```
+
+结果显示为：
+
+```sql
+-[ RECORD 1 ]---+---------------------------------------------------
+time            | 2023-02-23 11:22:17+08
+type            | crypt_operation
+result          | ok
+userid          | 10
+username        | test
+database        | postgres
+client_conninfo | gs_clean@::1@SSL_ON
+object_name     | 空
+detail_info     | ECDH success,cipher info(ECDHE-ECDSA-AES128-GCM-SHA256)
+node_name       | node1
+thread_id       | 281378338527344@730437737484187
+local_port      | 2044
+remote_port     | 44670
+privilege       | (ACL_NO_RIGHTS)
+-[ RECORD 2 ]---+--------------------------------------------------------
+time            | 2023-02-23 11:22:17+08
+type            | crypt_operation
+result          | ok
+userid          | 10
+username        | test
+database        | vastbase
+client_conninfo | gs_clean@::1@SSL_ON
+object_name     | 空
+detail_info     | ECDH success,cipher info(ECDHE-ECDSA-AES128-GCM-SHA256)
+node_name       | node1
+thread_id       | 281378372212848@730437737506897
+local_port      | 2044
+remote_port     | 44672
+privilege       | (ACL_NO_RIGHTS)
+-[ RECORD 3 ]---+--------------------------------------------------------
+time            | 2023-02-23 11:22:17+08
+type            | crypt_operation
+result          | ok
+userid          | 10
+username        | test
+database        | postgres
+client_conninfo | gs_clean@::1@SSL_ON
+object_name     | 空
+detail_info     | ECDH success,cipher info(ECDHE-ECDSA-AES128-GCM-SHA256)
+node_name       | node1
+thread_id       | 281378338527344@730437737530533
+local_port      | 2044
+remote_port     | 44674
+privilege       | (ACL_NO_RIGHTS)
+```
+

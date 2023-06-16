@@ -1,0 +1,94 @@
+####  数据类型
+
+兼容MySQL数据类型如下所示：
+
+| 类型     | 描述                                                         | 存储空间                                                     |
+| -------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| binary   | BINARY类型是固定长度二进制字符串，与char相似，可存储字符。不同的是BINARY存储的是二进制值，BINARY无字符集的概念，对其排序和比较都是按照二进制值进行对比。BINARY（N）中的N指的是字节长度。N取值范围（1-255）。 | 最大为1GB                                                    |
+| longtext | 变长字符串                                                   | 最大为1GB，但还需要考虑到列描述头信息的大小， 以及列所在元组的大小限制（也小于1GB），因此TEXT类型最大大小可能小于1GB。 |
+| datetime | datetime[n]函数用于设置显示毫秒后面的多少位，n表示获取的位数，取值[1-6]。 | 8字节                                                        |
+| longblob | 二进制大对象                                                 | 最大为4GB                                                    |
+
+**注意事项**
+
+- binary、datetime、longblob三个数据类型仅在数据库兼容模式为MySQL时能够使用（即创建DB时DBCOMPATIBILITY='B'），在其他数据库兼容模式下不能使用该特性。
+- longtext在Oracle和MySQL兼容模式下均支持。
+- datetime[n]数据类型的实现依赖Vastbase现有timestamp数据类型，因此，在一些场景中，例如\d元命令中，datetime数据类型会被显示成timestamp类型。
+- 当datetime[n]类型指定了小数位之后，如果datetime[n]类型的数据小数位都是0，则在Vastbase数据库中，受到timestamp数据类型的局限，其小数位上的0将不做显示。
+
+**示例**
+
+1、创建兼容MySQL的库db_mysql，并进入。
+
+```
+CREATE DATABASE db_mysql DBCOMPATIBILITY='B';
+\c db_mysql
+```
+
+2、创建测试binary类型的表test_mysql_type2并插入测试数据。
+
+```
+CREATE TABLE test_mysql_type2(c1 binary);
+INSERT INTO test_mysql_type2 values('a');
+INSERT INTO test_mysql_type2 values('张三');
+```
+
+3、验证binary数据类型。
+
+```
+SELECT * FROM test_mysql_type2;
+```
+
+当结果显示如下信息，则表示验证完成。
+
+```
+    c1
+-----------------------
+ \x61
+ \xe5bca0e4b889
+(2 rows)
+```
+
+4、创建测试longtext类型的表test_mysql_type3并插入测试数据。
+
+```
+CREATE TABLE test_mysql_type3(c1 longtext);
+INSERT INTO test_mysql_type3 values('测试abc123');
+```
+
+验证longtext数据类型。
+
+```
+SELECT * FROM test_mysql_type3;
+```
+
+当结果显示如下信息，则表示验证完成。
+
+```
+   c1
+------------------
+ 测试abc123
+(1 row)
+```
+
+5、创建测试datetime类型的表test_mysql_type4并插入测试数据。
+
+```
+CREATE TABLE test_mysql_type4(c1 datetime);
+INSERT INTO test_mysql_type4 values('2019-03-05 01:53:55.63');
+```
+
+6、验证datetime数据类型。
+
+```
+SELECT * FROM test_mysql_type4;
+```
+
+当结果显示如下信息，则表示验证完成。
+
+```
+     c1
+--------------------------
+ 2019-03-05 01:53:55.63
+(1 row)
+```

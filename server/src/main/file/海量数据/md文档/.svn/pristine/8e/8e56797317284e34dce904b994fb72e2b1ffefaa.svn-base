@@ -1,0 +1,10 @@
+# 分区表
+
+本章节主要介绍Vastbase G100兼容Oracle分区表的相关内容。指导用户使用分区表功能，以提高大表的查询效率。
+
+<a href="Oracle兼容性/对象管理/分区表/支持全局分区索引.html"><li>**支持全局分区索引**</li></a>
+
+<a href="Oracle兼容性/对象管理/分区表/支持INTERVAL分区表.html"><li>**支持INTERVAL分区表**</li></a>
+
+<a href="Oracle兼容性/对象管理/分区表/支持default分区.html"><li>**支持default分区**</li></a>
+

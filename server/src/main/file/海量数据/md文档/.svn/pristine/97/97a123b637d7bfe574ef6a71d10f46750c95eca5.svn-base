@@ -1,0 +1,418 @@
+# 数值类型
+
+本文列出了所有的可用的数值类型（整数类型、任意精度型、浮点类型、序列整型）。数字操作符和相关的内置函数请参见[数字操作函数和操作符](数字操作函数和操作符.html)。
+
+## 整数类型
+
+**表 1** 整数类型
+
+| **名称**       | **描述**                                           | **存储空间** | **范围**                                                     |
+| :------------- | :------------------------------------------------- | :----------- | :----------------------------------------------------------- |
+| TINYINT        | 微整数，别名为INT1。                               | 1字节        | 0 ~ 255                                                      |
+| SMALLINT       | 小范围整数，别名为INT2。                           | 2字节        | -32,768 ~ +32,767                                            |
+| INTEGER        | 常用的整数，别名为INT4。                           | 4字节        | -2,147,483,648 ~ +2,147,483,647                              |
+| BINARY_INTEGER | 常用的整数INTEGER的别名。                          | 4字节        | -2,147,483,648 ~ +2,147,483,647                              |
+| BIGINT         | 大范围的整数，别名为INT8。                         | 8字节        | -9,223,372,036,854,775,808 ~ +9,223,372,036,854,775,807      |
+| int16          | 16字节的大范围证书，目前不支持用户用于建表等使用。 | 16字节       | -170,141,183,460,469,231,731,687,303,715,884,105,728 ~ +170,141,183,460,469,231,731,687,303,715,884,105,727 |
+
+> <div align="left"><img src="image/image1.png" style="zoom:75%"></div>
+>
+> - TINYINT、SMALLINT、INTEGER、BIGINT和INT16类型存储各种范围的数字，也就是整数。试图存储超出范围以外的数值将会导致错误。
+> - 常用的类型是INTEGER，因为它提供了在范围、存储空间、性能之间的最佳平衡。一般只有取值范围确定不超过SMALLINT的情况下，才会使用SMALLINT类型。而只有在INTEGER的范围不够的时候才使用BIGINT，因为前者相对快得多。
+
+### 示例
+
+**示例1：**创建具有TINYINT类型数据的表。
+
+1、创建测试表。
+
+```
+CREATE TABLE int_type_t1(IT_COL1 TINYINT);
+```
+
+2、向表中插入数据。
+
+```
+INSERT INTO int_type_t1 VALUES(10);
+```
+
+3、查看数据。
+
+```
+SELECT * FROM int_type_t1;
+```
+
+返回结果为：
+
+```
+ it_col1  
+--------- 
+ 10
+(1 row)
+```
+
+4、删除表。
+
+```
+DROP TABLE int_type_t1;
+```
+
+**示例2：**创建具有TINYINT,INTEGER,BIGINT类型数据的表。
+
+1、创建测试表。
+
+```
+CREATE TABLE int_type_t2 (
+    a TINYINT, 
+    b TINYINT,
+    c INTEGER,
+    d BIGINT
+);
+```
+
+2、插入数据。
+
+```
+INSERT INTO int_type_t2 VALUES(100, 10, 1000, 10000);
+```
+
+3、查看数据。
+
+```
+ SELECT * FROM int_type_t2;
+```
+
+返回结果为：  
+
+```
+a  | b  |  c   |   d   
+-----+----+------+-------
+ 100 | 10 | 1000 | 10000
+(1 row)
+```
+
+4、删除表。
+
+```
+DROP TABLE int_type_t2;
+```
+
+## 任意精度型
+
+**表 2** 任意精度型
+
+| **名称**                           | **描述**                                                     | **存储空间**                                                 | **范围**                                                     |
+| :--------------------------------- | :----------------------------------------------------------- | :----------------------------------------------------------- | :----------------------------------------------------------- |
+| NUMERIC[(p[,s])]，DECIMAL[(p[,s])] | 精度p取值范围为[1,1000]，标度s取值范围为[0,p]。说明：p为总位数，s为小数位数。 | 用户声明精度。每四位（十进制位）占用两个字节，然后在整个数据上加上八个字节的额外开销。 | 未指定精度的情况下，小数点前最大131,072位，小数点后最大16,383位。 |
+| NUMBER[(p[,s])]                    | NUMERIC类型的别名。                                          | 用户声明精度。每四位（十进制位）占用两个字节，然后在整个数据上加上八个字节的额外开销。 | 未指定精度的情况下，小数点前最大131,072位，小数点后最大16,383位。 |
+
+### 示例
+
+**示例1：**创建具有DECIMAL类型数据的表。
+
+1、创建测试表。
+
+```
+ CREATE TABLE decimal_type_t1 ( DT_COL1 DECIMAL(10,4));
+```
+
+2、插入数据。
+
+```
+INSERT INTO decimal_type_t1 VALUES(123456.122331);
+```
+
+3、查询表中的数据。
+
+```
+SELECT * FROM decimal_type_t1;
+```
+
+返回结果为：
+
+```
+   dt_col1   
+-------------
+ 123456.1223
+(1 row)
+```
+
+4、删除表。
+
+```
+DROP TABLE decimal_type_t1;
+```
+
+**示例2：**创建具有NUMERIC类型数据的表。
+
+1、创建测试表。
+
+```
+CREATE TABLE numeric_type_t1 (NT_COL1 NUMERIC(10,4));
+```
+
+2、插入数据。
+
+```
+INSERT INTO numeric_type_t1 VALUES(123456.12354);
+```
+
+3、查询表中的数据。
+
+```
+ SELECT * FROM numeric_type_t1;
+```
+
+返回结果为：
+
+```
+   nt_col1   
+-------------
+ 123456.1235
+(1 row)
+```
+
+4、删除表。
+
+```
+ DROP TABLE numeric_type_t1;
+```
+
+> <div align="left"><img src="image/image1.png" style="zoom:75%"></div>
+>
+> - 与整数类型相比，任意精度类型需要更大的存储空间，其存储效率、运算效率以及压缩比效果都要差一些。在进行数值类型定义时，优先选择整数类型。当且仅当数值超出整数可表示最大范围时，再选用任意精度类型。
+> - 使用Numeric/Decimal进行列定义时，建议指定该列的精度p以及标度s。
+
+## 序列整型
+
+**表 3** 序列整型
+
+| **名称**    | **描述**                                              | **存储空间**                                                 | **范围**                                                |
+| :---------- | :---------------------------------------------------- | :----------------------------------------------------------- | :------------------------------------------------------ |
+| SMALLSERIAL | 二字节序列整型。                                      | 2字节                                                        | -32,768 ~ +32,767                                       |
+| SERIAL      | 四字节序列整型。                                      | 4字节                                                        | -2,147,483,648 ~ +2,147,483,647                         |
+| BIGSERIAL   | 八字节序列整型。                                      | 8字节                                                        | -9,223,372,036,854,775,808 ~ +9,223,372,036,854,775,807 |
+| LARGESERIAL | 默认插入十六字节序列整形，实际数值类型和numeric相同。 | 变长类型，每四位（十进制位）占用两个字节，然后在整个数据上加上八个字节的额外开销。 | 小数点前最大131,072位，小数点后最大16,383位。           |
+
+> <div align="left"><img src="image/image1.png" style="zoom:75%"></div>
+>
+> SMALLSERIAL、SERIAL、BIGSERIAL和LARGESERIAL类型不是真正的类型，只是为在表中设置唯一标识做的概念上的便利。因此，创建一个整数字段，并且把它的缺省数值安排为从一个序列发生器读取。应用了一个NOT NULL约束以确保NULL不会被插入。在大多数情况下用户可能还希望附加一个UNIQUE或PRIMARY KEY约束避免意外地插入重复的数值，但这个不是自动的。最后，将序列发生器从属于那个字段，这样当该字段或表被删除的时候也一并删除它。目前只支持在创建表时候指定SERIAL列，不可以在已有的表中，增加SERIAL列。另外临时表也不支持创建SERIAL列。因为SERIAL不是真正的类型，也不可以将表中存在的列类型转化为SERIAL。
+
+### 示例
+
+**示例1：**创建具有SMALLSERIAL类型数据的表。
+
+1、创建表。
+
+```
+CREATE TABLE smallserial_type_tab(a SMALLSERIAL);
+```
+
+2、插入数据。
+
+```
+INSERT INTO smallserial_type_tab VALUES(default);
+INSERT INTO smallserial_type_tab VALUES(default);
+```
+
+3、查看数据。
+
+```
+ SELECT * FROM smallserial_type_tab;  
+```
+
+返回结果为：
+
+```
+ a 
+---
+ 1
+ 2
+(2 rows)
+```
+
+**示例2：**创建具有 SERIAL类型数据的表。
+
+1、创建表。
+
+```
+CREATE TABLE serial_type_tab(b SERIAL);
+```
+
+2、插入数据。
+
+```
+INSERT INTO serial_type_tab VALUES(default);
+INSERT INTO serial_type_tab VALUES(default);
+```
+
+3、查看数据。
+
+```
+SELECT * FROM serial_type_tab; 
+```
+
+返回结果为：
+
+```
+ b 
+---
+ 1
+ 2
+(2 rows)
+```
+
+**示例3：**创建具有 BIGSERIAL类型数据的表。
+
+1、创建表。
+
+```
+CREATE TABLE bigserial_type_tab(c BIGSERIAL);
+```
+
+2、插入数据。
+
+```
+INSERT INTO serial_type_tab VALUES(default);
+INSERT INTO serial_type_tab VALUES(default);
+```
+
+3、查看数据。
+
+```
+SELECT * FROM serial_type_tab; 
+```
+
+返回结果为：
+
+```
+ b 
+---
+ 1
+ 2
+(2 rows)
+```
+
+**示例4：**创建具有LARGESERIAL类型数据的表。
+
+1、创建表。
+
+```
+CREATE TABLE largeserial_type_tab(c LARGESERIAL);
+```
+
+2、插入数据。
+
+```
+INSERT INTO largeserial_type_tab VALUES(default);
+INSERT INTO largeserial_type_tab VALUES(default);
+```
+
+3、查看数据。
+
+```
+SELECT * FROM largeserial_type_tab;
+```
+
+返回结果为：
+
+```
+ c 
+---
+ 1
+ 2
+(2 rows)
+```
+
+## 浮点类型
+
+**表 4** 浮点类型
+
+<table>
+    <tr>
+        <th>名称</th>
+        <th>描述</th>
+        <th>存储空间</th>
+        <th>范围</th> 
+    </tr>
+    <tr>
+        <td>REAL</td>
+        <td  rowspan="2">单精度浮点数，不精准。</td>
+        <td  rowspan="2">4字节</td>
+        <td  rowspan="2">-3.402E+38~3.402E+38，6位十进制数字精度。</td>
+    </tr>
+    <tr>
+        <td>FLOAT4 </td>
+    </tr>
+        <tr>
+        <td>DOUBLE PRECISION，别名BINARY_DOUBLE</td>
+        <td  rowspan="2">双精度浮点数，不精准。</td>
+        <td  rowspan="2">8字节</td>
+        <td  rowspan="2">-1.79E+308~1.79E+308，15位十进制数字精度。</td>
+    </tr>
+    <tr>
+        <td>FLOAT8 </td>
+    </tr>
+    <tr>
+        <td>FLOAT[(p)]</td>
+        <td>浮点数，不精准。精度p取值范围为[1,53]。</br>说明：p为精度，表示总位数。</td>
+        <td>4字节或8字节</td>
+        <td>根据精度p不同选择REAL或DOUBLE PRECISION作为内部表示。如不指定精度，内部用DOUBLE PRECISION表示。</td>
+    </tr>
+    <tr>
+        <td>DEC[(p[,s])]</td>
+        <td>精度p取值范围为[1,1000]，标度s取值范围为[0,p]。</br>说明：p为总位数，s为小数位位数。</td>
+        <td>用户声明精度。每四位（十进制位）占用两个字节，然后在整个数据上加上八个字节的额外开销。</td>
+        <td>未指定精度的情况下，小数点前最大131,072位，小数点后最大16,383位。</td>
+    </tr>
+    <tr>
+        <td>INTEGER[(p[,s])]</td>
+        <td>精度p取值范围为[1,1000]，标度s取值范围为[0,p]。</td>
+        <td>用户声明精度。每四位（十进制位）占用两个字节，然后在整个数据上加上八个字节的额外开销。</td>
+        <td>-</td>
+    </tr>
+</table>
+
+### 示例
+
+1、创建测试表。
+
+```
+CREATE TABLE float_type_t2 
+(
+    FT_COL1 INTEGER,
+    FT_COL2 FLOAT4,
+    FT_COL3 FLOAT8,
+    FT_COL4 FLOAT(3),
+    FT_COL5 BINARY_DOUBLE,
+    FT_COL6 DECIMAL(10,4),
+    FT_COL7 INTEGER(6,3)
+);
+```
+
+2、插入数据。
+
+```
+INSERT INTO float_type_t2 VALUES(10,10.365456,123456.1234,10.3214, 321.321, 123.123654, 123.123654);
+```
+
+3、查看数据。
+
+```
+ SELECT * FROM float_type_t2 ;
+```
+
+返回结果为：
+
+```
+ ft_col1 | ft_col2 |   ft_col3   | ft_col4 | ft_col5 | ft_col6  | ft_col7 
+---------+---------+-------------+---------+---------+----------+---------
+      10 | 10.3655 | 123456.1234 | 10.3214 | 321.321 | 123.1237 | 123.124
+(1 row)
+```
+
+4、删除表。
+
+```
+DROP TABLE float_type_t2;
+```

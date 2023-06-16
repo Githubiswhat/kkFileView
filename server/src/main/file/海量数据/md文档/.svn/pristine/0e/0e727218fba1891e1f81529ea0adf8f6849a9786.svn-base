@@ -1,0 +1,30 @@
+##### 赋值语句
+
+**语法**
+
+给变量赋值的语法请参见下图。
+
+assignment_value::=
+
+<div align="left"><img src="image/变量赋值语法.jpg" style="zoom:50%")</div>     
+
+ 
+
+对以上语法格式的解释如下：
+
+- variable_name：变量名。
+
+- value：可以是值或表达式。值value的类型需要和变量variable_name的类型兼容才能正确赋值。
+
+**示例**
+
+```
+DECLARE 
+  emp_id  INTEGER := 7788;--赋值 
+BEGIN 
+  emp_id := 5;--赋值 
+  emp_id := 5*7784; 
+END; 
+/
+```
+

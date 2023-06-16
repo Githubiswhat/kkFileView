@@ -1,0 +1,81 @@
+##### 收集文献统计
+
+**功能描述**
+
+函数ts_stat可用于检查配置和查找候选停用词。
+
+**语法格式**
+
+```
+ts_stat(sqlquery text, [ weights text, ]
+        OUT word text, OUT ndoc integer,
+        OUT nentry integer) returns setof record
+```
+
+**参数说明**
+
+- sqlquery：是一个包含SQL查询语句的文本，该SQL查询将返回一个tsvector
+- ts_stat执行SQL查询语句并返回一个包含tsvector中每一个不同的语素（词）的统计信息。返回信息包括：
+  - word text：词素。
+  - ndoc integer：词素在文档（tsvector）中的编号。
+  - nentry integer：词素出现的频率。
+
+**示例**
+
+1、创建测试表并插入数据。
+
+```
+DROP SCHEMA IF EXISTS tsearch CASCADE;
+CREATE SCHEMA tsearch;
+CREATE TABLE tsearch.pgweb(id int, body text, title text, last_mod_date date);
+
+INSERT INTO tsearch.pgweb VALUES(1, 'China, officially the People''s Republic of China (PRC), located in Asia, is the world''s most populous state.', 'China', '2010-1-1');  
+INSERT INTO tsearch.pgweb VALUES(2, 'America is a rock band, formed in England in 1970 by multi-instrumentalists Dewey Bunnell, Dan Peek, and Gerry Beckley.', 'America', '2010-1-1');   
+INSERT INTO tsearch.pgweb VALUES(3, 'England is a country that is part of the United Kingdom. It shares land borders with Scotland to the north and Wales to the west.', 'England', '2010-1-1');   
+INSERT INTO tsearch.pgweb VALUES(4, 'Australia, officially the Commonwealth of Australia, is a country comprising the mainland of the Australian continent, the island of Tasmania, and numerous smaller islands.', 'Australia', '2010-1-1'); 
+INSERT INTO tsearch.pgweb VALUES(6, 'Japan is an island country in East Asia.', 'Japan', '2010-1-1');
+INSERT INTO tsearch.pgweb VALUES(7, 'Germany, officially the Federal Republic of Germany, is a sovereign state and federal parliamentary republic in central-western Europe.', 'Germany', '2010-1-1');
+INSERT INTO tsearch.pgweb VALUES(8, 'France, is a sovereign state comprising territory in western Europe and several overseas regions and territories.', 'France', '2010-1-1');
+INSERT INTO tsearch.pgweb VALUES(9, 'Italy officially the Italian Republic, is a unitary parliamentary republic in Europe.', 'Italy', '2010-1-1');
+INSERT INTO tsearch.pgweb VALUES(10, 'India, officially the Republic of India, is a country in South Asia.', 'India', '2010-1-1');
+INSERT INTO tsearch.pgweb VALUES(11, 'Brazil, officially the Federative Republic of Brazil, is the largest country in both South America and Latin America.', 'Brazil', '2010-1-1');
+INSERT INTO tsearch.pgweb VALUES(12, 'Canada is a country in the northern half of North America.', 'Canada', '2010-1-1');
+INSERT INTO tsearch.pgweb VALUES(13, 'Mexico, officially the United Mexican States, is a federal republic in the southern part of North America.', 'Mexico', '2010-1-1');
+```
+
+2、如果设置了权重条件，只有标记了对应权重的词素才会统计频率。例如，在一个文档集中检索使用频率最高的十个单词。
+
+```
+SELECT * FROM ts_stat('SELECT to_tsvector(''english'',title) FROM tsearch.pgweb WHERE id < 10') ORDER BY nentry DESC, ndoc DESC, word LIMIT 10;
+```
+
+结果显示如下：
+
+```
+   word    | ndoc | nentry 
+-----------+------+--------
+ america   |    1 |      1
+ australia |    1 |      1
+ china     |    1 |      1
+ england   |    1 |      1
+ franc     |    1 |      1
+ germani   |    1 |      1
+ itali     |    1 |      1
+ japan     |    1 |      1
+(8 rows)
+```
+
+3、同样的情况，但是只计算权重为A或者B的单词使用频率。
+
+```
+SELECT * FROM ts_stat('SELECT to_tsvector(''english'', title) FROM tsearch.pgweb WHERE id < 10', 'a') ORDER BY nentry DESC, ndoc DESC, word LIMIT 10;
+```
+
+结果显示如下：
+
+```
+ word | ndoc | nentry 
+------+------+--------
+(0 rows)
+```
+

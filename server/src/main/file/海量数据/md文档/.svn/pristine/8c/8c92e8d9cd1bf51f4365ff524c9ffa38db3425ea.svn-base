@@ -1,0 +1,65 @@
+##### 执行动态查询语句
+
+**功能描述**
+
+动态查询就是在程序运行的时候来进行查询。Vastbase提供两种方式：使用EXECUTE IMMEDIATE、OPEN FOR实现动态查询。前者通过动态执行SELECT语句，后者结合了游标的使用。当需要将查询的结果保存在一个数据集用于提取时，可使用OPEN FOR实现动态查询。
+
+**EXECUTE IMMEDIATE**
+
+语法图请参见下图。
+
+EXECUTE IMMEDIATE dynamic_select_clause::=
+
+<div align="left"><img src="image/动态查询语句语法.jpg" style="zoom:50%")</div>     
+
+ 
+
+using_clause子句的语法图参见下图。
+
+using_clause::=
+
+<div align="left"><img src="image/using_clause子句语法图.jpg" style="zoom:50%")</div>    
+
+ 
+
+对以上语法格式的解释如下：
+
+- define_variable：用于指定存放单行查询结果的变量。
+
+- USING IN bind_argument：用于指定存放传递给动态SQL值的变量，即在dynamic_select_string中存在占位符时使用。
+
+- USING OUT bind_argument：用于指定存放动态SQL返回值的变量。
+
+ 
+
+<div align="left"><img src="image/image2.png" style="zoom:20%")</div>     
+
+- 查询语句中，into和out不能同时存在；
+
+- 占位符命名以“:”开始，后面可跟数字、字符或字符串，与USING子句的bind_argument一一对应；
+
+- bind_argument只能是值、变量或表达式，不能是表名、列名、数据类型等数据库对象，即不支持使用bind_argument为动态SQL语句传递模式对象。如果存储过程需要通过声明参数传递数据库对象来构造动态SQL语句（常见于执行DDL语句时），建议采用连接运算符“||”拼接dynamic_select_clause；
+
+- 动态PL/SQL块允许出现重复的占位符，即相同占位符只能与USING子句的一个bind_argument按位置对应。
+
+**OPEN FOR**
+
+动态查询语句还可以使用OPEN FOR打开动态游标来执行。
+
+语法参见下图。
+
+open_for::=
+
+<div align="left"><img src="image/OPENFOR语法.jpg" style="zoom:50%")</div>    
+
+ 
+
+参数说明：
+
+- cursor_name：要打开的游标名。
+
+- dynamic_string：动态查询语句。
+
+- USING value：在dynamic_string中存在占位符时使用。
+
+游标的使用请参考章节[游标](游标.md)。

@@ -1,0 +1,69 @@
+# 存储数据完整性校验
+
+## 功能描述
+
+所谓存储数据完整性是指数据在其生命周期中的准确性和一致性。指在传输、存取数据的过程中，确保数据不被未授权的篡改或在篡改后能够被迅速发现。Vastbase G100支持使用checksum校验算法进行存储数据的完整性校验。
+
+## 注意事项
+
+仅Vastbase G100 2.2 Build10及以上版本支持此功能。
+
+## 示例
+
+1、使用vsql连接数据库，创建测试表并插入数据。
+
+```sql
+create table t1(id int,username varchar);
+insert into t1 values(1,'张三');
+```
+
+2、查询表数据。
+
+```sql
+select * from t1;
+```
+
+返回结果为：
+
+```sql
+id  |  username 
+----+-----------
+  1 |  张三
+(1 row)
+```
+
+3、查询表所在的目录。
+
+```sql
+select pg_relation_filepath('t1');
+```
+
+返回结果为：
+
+```sql
+pg_relation_filepath
+---------------------
+base/16553/16555
+(1 row)
+```
+
+4、退出数据库。指定表所在目录，通过dd指令模拟损坏表数据。
+
+```sql
+\q
+dd bs=8192 count=1 seek=1 of=./data/base/16553/16555 if=./data/base/16553/16555
+```
+
+5、使用vsql连接数据库，再次查询表数据。
+
+```sql
+select * from t1;
+```
+
+出现如下报错，表示数据不一致，页校验失败。
+
+```sql
+WARNING:  page verification failed,calculated checksum 3939 but expected 3940,the block num is 1
+ERROR:  invalid page in block 1 of relation base/16553/16555
+```
+

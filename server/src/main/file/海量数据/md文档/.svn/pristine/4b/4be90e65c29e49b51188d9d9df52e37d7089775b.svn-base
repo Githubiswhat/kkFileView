@@ -1,0 +1,152 @@
+### 创建函数、存储过程、触发器和包时进行编译检查
+
+**功能描述**
+
+在创建PL/pgSQL对象时，进行语义检查。增加GUC参数vbplsql_check，当该参数设置为on或者true生效，在创建PL/pgSQL对象时进行语义检查，否则，不检查。检查功能如下：
+
+- 创建函数需要返回非void时候，判断程序是否有return返回值，如果没有return返回值则创建失败，涉及到的statement有if、case语句。
+
+- 字符串拼接如果使用的双引号进行字符串拼接，则创建对象失败。
+
+- 如果DMshowu 句中出现表不存在的情况，则创建对象失败，不包含动态执行语句。
+
+- 如果DML语句出现语法错误的情况，则创建对象失败，不包含动态执行语句。
+
+**设置方法**
+设置GUC参数vbplsql_check = true或者on。
+
+```
+set vbplsql_check = true;
+```
+
+**注意事项**
+
+无。
+
+**示例**
+
+示例一：创建触发器，判断是否有return返回。
+
+1、创建测试表。
+
+```
+drop table if exists t1_z;
+drop function if exists tri_func;
+create table t1_z(w1 date);
+```
+
+2、创建函数。
+
+```
+CREATE OR REPLACE FUNCTION tri_func() RETURNS TRIGGER AS
+$$
+DECLARE
+BEGIN
+raise notice 'trigger begin: TG_OP is %',TG_OP;
+if TG_OP='INSERT' then
+insert into t1_z values('2022-05-19'::date+1);
+end if;
+END $$ LANGUAGE 'plpgsql';
+```
+
+返回结果如下，则表示函数创建成功:
+
+```
+CREATE FUNCTION
+```
+
+3、创建触发器。
+
+```
+CREATE TRIGGER be_tri
+BEFORE INSERT OR DELETE OR UPDATE
+ON t1_z
+FOR EACH ROW
+EXECUTE PROCEDURE tri_func();
+```
+
+创建触发器失败，提示缺少返回值，返回结果如下：
+
+```
+ERROR:  control reached end of function without RETURN
+```
+
+示例二：存储过程-DML语句中出现表不存在的情况，则创建对象失败。
+
+1、删除表。
+
+```
+drop table if exists t1_z;
+drop procedure if exists func;
+```
+
+2、创建存储过程。
+
+```
+create or replace procedure func()
+as
+declare
+begin
+insert into t1_z values(to_date('2022-05-19 135623.123','YYYY-MM-DD HH24MISS.FF'));
+end;
+/
+```
+
+存储过程创建失败，提示表不存在，返回结果如下：
+
+```
+ERROR:  relation "t1_z" does not exist on node1
+LINE 1: insert into t1_z values(to_date('2022-05-19 135623.123','YYY...
+                    ^
+QUERY:  insert into t1_z values(to_date('2022-05-19 135623.123','YYYY-MM-DD HH24MISS.FF'))
+
+```
+
+3、调用存储过程。
+
+```
+select func();
+```
+
+调用存储过程失败，提示不存在，返回结果如下：
+
+```
+ERROR:  function func() does not exist
+LINE 1: select func();
+               ^
+HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+CONTEXT:  referenced column: func
+```
+
+示例三：存储过程-DML语句出现语法错误，则创建对象失败。
+
+1、创建测试表。
+
+```
+drop table if exists t1_z;
+drop procedure if exists func;
+create table t1_z(col1 date);
+```
+
+2、创建存储过程（其中insert语句语法错误）。
+
+```
+create or replace procedure func()
+as
+begin
+insert into t1_z ('2022-05-19');
+end;
+/
+```
+
+存储过程创建失败，提示语法错误,返回结果如下：
+
+```
+ERROR:  syntax error at or near "'2022-05-19'"
+LINE 3: insert into t1_z ('2022-05-19');
+                          ^
+QUERY:   DECLARE
+begin
+insert into t1_z ('2022-05-19');
+end
+```

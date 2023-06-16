@@ -1,0 +1,180 @@
+# 支持@i:=0方式赋值
+
+## 功能描述
+
+Vastbase在MySQL兼容模式下支持`SELECT @i:=expr`方式赋值查询，输出查询结果并将查询结果存储到"@i"中，若查询结果有多行，则存储最后一行数据。
+
+## 语法格式
+
+```sql
+@i:=expr
+```
+
+## 参数说明
+
+- **i**
+
+  被赋值对象。
+
+- **expr**
+
+  赋值语句。
+
+## 注意事项
+
+- 该功能仅在数据库兼容模式为MySQL时能够使用（即创建DB时DBCOMPATIBILITY='B'），在其他数据库兼容模式下不能使用该特性。
+
+- 使用时需先设置参数"enable_set_variable_b_format"为"on"。
+
+  > <div align="left"><img src="image/img1.png" style="zoom:75%")</div> 
+  >
+  > 参数"enable_set_variable_b_format"设置为"on"时支持使用"@varname"作为变量。
+
+- 仅支持赋值、case语句、操作符计算、调用函数等运算。
+
+- 运算的返回结果仅支持数字类型、字符类型或布尔类型。
+
+- 如参数expr（赋值语句）中包含"@i"，需保证"@i"的类型在计算前后不发生改变。
+
+## 示例
+
+**前置步骤**
+
+1、创建兼容模式为MySQL的库db_mysql，并进入。
+
+```sql
+create  database  db_mysql  dbcompatibility  'B';
+\c  db_mysql
+```
+
+2、设置"enable_set_variable_b_format"为"on"。
+
+```sql
+set enable_set_variable_b_format to on;
+show enable_set_variable_b_format;
+```
+
+结果返回如下表示设置成功：
+
+```sql
+ enable_set_variable_b_format
+------------------------------
+ on
+(1 row)
+```
+
+**示例1：**调用字符处理函数char_length，将字符长度赋值给参数"i"。
+
+1、执行语句进行赋值。
+
+```sql
+select @i:=char_length('hello');
+```
+
+返回赋值结果如下：
+
+```sql
+ ?column?
+----------
+        5
+(1 row)
+```
+
+2、查询"@i"的值。
+
+```sql
+select @i;
+```
+
+结果返回如下，表示赋值成功：
+
+```sql
+ @i
+----
+  5
+(1 row)
+```
+
+**示例2：**多变量赋值查询。
+
+1、创建测试表并插入数据。
+
+```sql
+create table tab_1130999(a1 int);
+insert into tab_1130999 values(1),(2),(3);
+```
+
+2、执行赋值查询。
+
+```sql
+select @1130999_1:=3,@1130999_2:='aa',@1130999_3:='你好',@1130999_4:=a1 from tab_1130999;
+```
+
+结果返回如下：
+
+```sql
+ ?column? | ?column? | ?column? | ?column?
+----------+----------+----------+----------
+        3 | aa       | 你好     |        1
+        3 | aa       | 你好     |        2
+        3 | aa       | 你好     |        3
+(3 rows)
+```
+
+3、查询赋值结果。
+
+```sql
+select @1130999_1,@1130999_2,@1130999_3,@1130999_4;
+```
+
+结果返回如下：
+
+```sql
+ @1130999_1 | @1130999_2 | @1130999_3 | @1130999_4
+------------+------------+------------+------------
+          3 | aa         | 你好       |          3
+(1 row)
+```
+
+**示例3：**使用case语句进行赋值。
+
+1、创建测试表并插入测试数据。
+
+```sql
+create table tab_1130965(a1 int,a2 int);
+insert into tab_1130965 values(1,1),(2,3),(3,2),(4,1);
+```
+
+2、使用case语句进行赋值，当"tab_1130965.a1<3"时，赋值为"tab_1130965.a1 +3"。
+
+```sql
+select (@bq1:=case when tab_1130965.a1<3 then tab_1130965.a1 +3 else tab_1130965.a1 end) from tab_1130965;
+```
+
+结果返回如下：
+
+```sql
+ ?column?
+----------
+        4
+        5
+        3
+        4
+(4 rows)
+```
+
+3、查询赋值结果。
+
+```sql
+select @bq1;
+```
+
+结果返回如下：
+
+```sql
+ @bq1
+------
+    4
+(1 row)
+```
+

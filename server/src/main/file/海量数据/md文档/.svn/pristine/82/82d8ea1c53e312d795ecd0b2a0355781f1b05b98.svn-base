@@ -1,0 +1,7 @@
+# 连接和认证
+
+本章节介绍关于设置客户端和服务器连接方式、安全认证方式，以及通信库相关的参数设置方式。
+
+<a href="连接设置.html"><li>**连接设置**</li></a>
+<a href="安全和认证_postgresql-conf.html"><li>**安全和认证-postgresql.conf**</li></a>
+<a href="通信库参数.html"><li>**通信库参数**</li></a>

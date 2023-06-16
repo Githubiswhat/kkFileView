@@ -1,0 +1,92 @@
+##### 执行动态非查询语句
+
+**功能描述**
+
+动态非查询就是在程序运行的时候来进行非查询操作。
+
+**语法格式**
+
+语法格式请参见下图。
+
+noselect::=
+
+<div align="left"><img src="image/动态非查询语句语法.jpg" style="zoom:50%")</div>   
+
+ 
+
+using_clause子句的语法参见图下图。
+
+using_clause::=
+
+<div align="left"><img src="image/using_clause子句非语法.jpg" style="zoom:50%")</div>  
+
+**参数说明**
+
+USING IN bind_argument：用于指定存放传递给动态SQL值的变量，在dynamic_noselect_string中存在占位符时使用，即动态SQL语句执行时，bind_argument将替换相对应的占位符。
+
+
+
+> <div align="left"><img src="image/image1.png" style="zoom:25%")</div>    
+>
+> bind_argument只能是值、变量或表达式，不能是表名、列名、数据类型等数据库对象。如果存储过程需要通过声明参数传递数据库对象来构造动态SQL语句（常见于执行DDL语句时），建议采用连接运算符“||”拼接dynamic_select_clause。另外，动态语句允许出现重复的占位符，相同占位符只能与唯一一个bind_argument按位置一一对应。
+
+**示例**
+
+1、创建测试表。 
+
+```
+CREATE TABLE sections_t1 
+( 
+  section    NUMBER(4) , 
+  section_name  VARCHAR2(30), 
+  manager_id   NUMBER(6), 
+  place_id    NUMBER(4)  
+); 
+```
+
+2、声明变量。 
+
+```
+DECLARE  
+  section    NUMBER(4) := 280;  
+  section_name  VARCHAR2(30) := 'Info support';  
+  manager_id   NUMBER(6) := 103; 
+  place_id    NUMBER(4) := 1400; 
+  new_colname  VARCHAR2(10) := 'sec_name'; 
+BEGIN  
+```
+
+3、执行查询 。
+
+```
+EXECUTE IMMEDIATE 'insert into sections_t1 values(:1, :2, :3, :4)'  
+USING section, section_name, manager_id,place_id;  
+```
+
+4、执行查询（重复占位符） 。
+
+```
+EXECUTE IMMEDIATE 'insert into sections_t1 values(:1, :2, :3, :1)'  
+USING section, section_name, manager_id;  
+```
+
+5、执行ALTER语句（建议采用“||”拼接数据库对象构造DDL语句） 。
+
+```
+EXECUTE IMMEDIATE 'alter table sections_t1 rename section_name to ' || new_colname; 
+END;  
+/ 
+```
+
+6、查询数据 。
+
+```
+SELECT * FROM sections_t1; 
+```
+
+7、删除表 。
+
+```
+DROP TABLE sections_t1;
+```
+

@@ -1,0 +1,3 @@
+#### USER_IND_PARTITIONS
+
+USER_IND_PARTITIONS视图用于存储当前用户下的索引分区信息。该视图中的字段与ALL_IND_PARTITIONS相同。具体请参考章节“ALL_IND_PARTITIONS”。

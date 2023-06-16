@@ -1,0 +1,56 @@
+# 修复隐式转换导致的性能下降
+
+## 功能描述
+
+当Vastbase G100在执行带where in条件的select语句时，如果column类型为varchar，而value list中给出的都是数字的列表时，执行计划会进行隐式转换，则将会导致性能大幅下降。
+
+为此，Vastbase优化执行计划，即在处理where in条件表达式时，如果左操作表达式是字符串类型，且in列表中的每一个表达式的数据类型都能隐式转换为字符串类型，则将最终执行计划优化为检查左操作表达式是否为in列表中表达式组成的字符串数组的一个元素。
+
+## 注意事项
+
+优化查询的前提是where in 列表中的数据类型能够隐式转换为字符串类型，否则该优化计划无法执行。
+
+## 示例
+
+1、创建测试表并插入数据。
+
+```sql
+create table test(c1 varchar(2), c2 varchar, c3 text) ;
+insert into test select v,v,v from generate_series(1,12) as v;
+```
+
+2、查看表内容。
+
+```sql
+select c2,c3 from test where test.c3 in (3,4,7) order by 1; 
+```
+
+结果显示为：
+
+```sql
+ c2 | c3
+----+----
+ 3  | 3
+ 4  | 4
+ 7  | 7
+(3 rows)
+```
+
+3、查看执行计划。
+
+```sql
+explain (costs off) select c2,c3 from test where test.c3 in (3,4,7) order by 1;
+```
+
+结果显示为：
+
+```sql
+                   QUERY PLAN
+------------------------------------------------
+ Sort
+   Sort Key: c2
+   ->  Seq Scan on test
+         Filter: (c3 = ANY ('{3,4,7}'::text[]))
+(4 rows)
+```
+

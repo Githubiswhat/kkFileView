@@ -1,0 +1,138 @@
+# 动态加载数据
+
+**功能描述**
+
+用户在应用侧保证一张表在不同库上同时保存两份同样的数据，一个库用来跑业务，一个库用来作为备份、当业务数据损坏时，应用可以将备份库中对应表的相关物理文件覆盖掉业务库的对应表的物理文件，然后用动态加载的功能将业务库的表数据恢复出来，同时保证其最大字段、索引、约束等都不受影响。
+
+**语法格式**
+
+```
+select * from GET_RELATIVE_FILEPATHS('[schema_name.]table_name');
+select DYNAMIC_LOAD('[schema_name.]dynamic_loading_table_name');
+```
+
+**参数说明**
+
+- GET_RELATIVE_FILEPATHS函数：通过制定的表名获取其相关的所有物理文件的绝对路径，包括但不限于toast、索引等。
+
+- schema_name：用来制定表对象所属的schema，当不指定时依据search_path的顺序来寻找对象，在匹配不到对象时报错。
+
+- table_name：所需查询的表名。
+
+- DYNAMIC_LOAD函数：通过制定的表名，将覆盖到当前表上的物理文件中的数据动态加载出来，确保数据正确，同时表上的索引、约束等都保持正常
+
+- dynamic_loading_table_name：指定动态加载的表名。
+
+
+**注意事项**
+
+- 动态加载前，要验证覆盖过来的物理文件和当前表的数据结构是否一致。
+- 动态加载对异常场景的处理优先级较低。
+
+**示例**
+
+**示例1**：通过GET_RELATIVE_FILEPATHS函数找到表所在路径。
+
+1、前提条件 
+
+​	A库在实例1下、B库在实例2下，且A库与B库的编码格式一致。
+
+```
+create database base_a;//实例1下创建数据库
+create database base_b;//实例2下创建数据库
+```
+
+2、在A库创建行存表并插入数据。
+
+```
+CREATE TABLE dynamic_loading_tb ( 
+no_w_id int , 
+col BOOLEAN ); 
+
+insert into dynamic_loading_tb values('1','true'); 
+insert into dynamic_loading_tb values('2','false'); 
+insert into dynamic_loading_tb values(-2147483648,'true'); 
+```
+
+3、在B库创建行存表，并vacuum。
+
+```
+CREATE TABLE dynamic_loading_tb (
+no_w_id int ,
+col BOOLEAN
+);
+
+vacuum freeze dynamic_loading_tb;
+checkpoint;
+```
+
+4、找到B库对应表的数据文件。
+
+```
+select * from get_relative_filepaths('dynamic_loading_tb');
+```
+
+结果返回为：
+
+```
+
+      relation      | relation_oid |                file_path
+--------------------+--------------+-----------------------------------------
+ dynamic_loading_tb |        16546 | /home/vastbase/cluster/base/16536/16546
+(1 row)
+
+```
+
+**示例2** ：使用DYNAMIC_LOAD函数动态加载数据。
+
+1、创建含不同数据类型的表。
+
+```
+drop table if exists dynamic_loading_datatype;
+create  table dynamic_loading_datatype(
+c1   INT        ,
+c2   BOOLEAN    ,
+c3   DATE                                    
+);
+```
+
+2、插入数据。
+
+```
+insert into dynamic_loading_datatype values(
+1,
+'TRUE',
+'2022-12-21'
+);
+```
+
+3、在A库中执行动态加载命令。
+
+```
+select dynamic_load('dynamic_loading_datatype ');
+```
+
+执行后显示：
+
+```
+ dynamic_load
+--------------
+ success
+(1 row)
+```
+
+5、查询表的数据。
+
+```
+select count(*) from dynamic_loading_datatype ;
+```
+
+查询结果显示：
+
+```
+ count
+-------
+     1
+(1 row)
+```
+

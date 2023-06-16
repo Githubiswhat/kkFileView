@@ -1,0 +1,204 @@
+##### 三权分立
+
+**功能描述**
+
+默认权限机制和管理员两节的描述基于的是Vastbase创建之初的默认情况。从前面的介绍可以看出，默认情况下拥有SYSADMIN属性的系统管理员，具备系统最高权限。
+
+在实际业务管理中，为了避免系统管理员拥有过度集中的权利带来高风险，可以设置三权分立。将系统管理员的部分权限分立给安全管理员和审计管理员，形成系统管理员、安全管理员和审计管理员三权分立。系统管理员权限主要对应数据库中日常运维，例如：创建用户、对象，修改数据库配置参数等；安全管理员权限允许用户维护敏感标记、对数据库对象设置敏感标记，无法创建表、用户和其他数据库对象；审计管理员权限允许用户维护审计策略、审计日志，无法创建表、用户和其他数据库对象。简言之，除了系统管理员和普通用户，安全管理员和审计管理员不接触用户数据。
+
+三权分立后，系统管理员只会对自己作为所有者的对象有权限。
+
+初始用户的权限不受三权分立设置影响。因此建议仅将此初始用户作为DBA管理用途，而非业务应用。
+
+**配置方法**
+
+三权分立的设置办法为：将参数enable_Separation_Of_Duty设置为on，并重启数据库。
+
+**注意事项**
+
+- 在启用三权分立功能情况下，不允许修改其他类型用户的属性，不允许修改用户属性使之同时具备安全员、审计员和管理员中两种或以上权限。例如不允许管理员修改安全员的用户属性。
+
+- 不允许同时指定sysadmin、auditadmin和ssoadmin中两种或以上属性，若用户属性为auditadmin或者ssoadmin，则不允许指定createrole和createdb属性。
+
+**权限说明**
+
+- 三权分立前的权限详情及三权分立后的权限变化，请分别参见表1和表2。
+
+
+**表 1** 默认的用户权限
+
+<table>
+    <tr>
+        <td>对象名称</td> 
+        <td>初始用户（id为10）</td> 
+        <td>系统管理员</td>
+        <td>监控管理员</td>
+        <td>运维管理员</td>
+        <td>安全策略管理员</td>
+        <td>安全管理员</td>
+        <td>审计管理员</td>
+        <td>普通用户</td>
+   </tr>
+    <tr>
+        <td >表空间</td>
+        <td rowspan="7">具有除私有用户表对象访问权限外，所有的权限</td>
+        <td>对表空间有创建、修改、删除、访问、分配操作的权限。</td>
+        <td colspan="6">不具有对表空间进行创建、修改、删除、分配的权限，访问需要被赋权。</td>
+    </tr>
+    <tr>
+        <td >表</td>
+        <td>对所有表有所有的权限。</td>
+        <td colspan="6">仅对自己的表有所有的权限，对其他用户的表无权限。</td>
+    </tr>
+        <tr>
+        <td >索引</td>
+        <td>可以在所有的表上建立索引。</td>
+        <td colspan="6">仅可以在自己的表上建立索引。</td>
+    </tr>
+        <tr>
+        <td >模式</td>
+        <td>对除dbe_perf以外的所有模式有所有的权限。</td>
+        <td>仅对dbe_perf模式和自己的模式有所有的权限，对其他用户的模式无权限。</td>
+        <td colspan="5">仅对自己的模式有所有的权限，对其他用户的模式无权限。</td>
+    </tr>
+        <tr>
+        <td >函数</td>
+        <td>对除dbe_perf模式下的函数以外的所有的函数有所有的权限。</td>
+        <td>仅对dbe_perf模式下的和自己的函数有所有的权限，对其他用户放在public这个公共模式下的函数有调用的权限，对其他用户放在其他模式下的函数无权限。</td>
+        <td colspan="5">仅对自己的函数有所有的权限，对其他用户放在public这个公共模式下的函数有调用的权限，对其他用户放在其他模式下的函数无权限。</td>
+    </tr>
+        <tr>
+        <td>自定义视图</td>
+        <td>对除dbe_perf模式下的视图以外的所有的视图有所有的权限。</td>
+        <td>仅对dbe_perf模式下的和自己的视图有所有的权限，对其他用户的视图无权限。</td>
+        <td colspan="5">仅对自己的视图有所有的权限，对其他用户的视图无权限。</td>
+    </tr>
+        <tr>
+        <td>系统表和系统视图</td>
+        <td>可以查看所有系统表和视图。</td>
+        <td colspan="6">只可以查看部分系统表和视图。详细请参见系统表和系统视图。</td>
+    </tr>
+
+
+**表 2** 三权分立较非三权分立权限变化说明
+
+<table>
+    <tr>
+        <td>对象名称</td> 
+        <td>初始用户（id为10）</td> 
+        <td>系统管理员</td>
+        <td>监控管理员</td>
+        <td>运维管理员</td>
+        <td>安全策略管理员</td>
+        <td>安全管理员</td>
+        <td>审计管理员</td>
+        <td>普通用户</td>
+   </tr>
+   <tr>
+       <td>表空间</td>
+       <td rowspan="7">无变化。
+依然具有除私有用户表对象访问权限外，所有的权限。</td>
+       <td>无变化</td>
+       <td colspan="6">无变化。</td>
+    </tr>
+    <tr>
+        <td>表</td>
+        <td>权限缩小。只对自己的表及其他用户放在public模式下的表有所有的权限，对其他用户放在属于各自模式下的表无权限。</td>
+         <td colspan="6">无变化。</td>
+    </tr>
+    <tr>
+        <td>索引</td>
+        <td>权限缩小。只可以在自己的表及其他用户放在public模式下的表上建立索引。</td>
+         <td colspan="6">无变化。</td>
+    </tr>
+    <tr>
+        <td>模式</td>
+        <td>权限缩小。只对自己的模式有所有的权限，对其他用户的模式无权限。</td>
+        <td colspan="6">无变化。</td>
+    </tr>
+    <tr>
+        <td>函数</td>
+        <td>权限缩小。
+只对自己的函数及其他用户放在public模式下的函数有所有的权限，对其他用户放在属于各自模式下的函数无权限。</td>
+        <td colspan="6">无变化。</td>
+    </tr>
+    <tr>
+        <td>自定义视图</td>
+        <td>权限缩小。
+只对自己的视图及其他用户放在public模式下的视图有所有的权限，对其他用户放在属于各自模式下的视图无权限。</td>
+        <td colspan="6">无变化。</td>
+    </tr>
+    <tr>
+        <td>系统表和系统视图</td>
+        <td colspan="7">无变化。</td>
+    </tr>
+
+
+> <div align="left"><img src="image/image2.png" style="zoom:20%")</div>
+>
+> PG_STATISTIC系统表和PG_STATISTIC_EXT系统表存储了统计对象的一些敏感信息，如高频值MCV。进行三权分立后系统管理员仍可以通过访问这两张系统表，得到统计信息里的这些信息。
+
+- 三种管理员的权限和范围如下所示
+
+**表 3** 审计员权限列表
+
+| 权限类型           | 说明                                             |
+| ------------------ | ------------------------------------------------ |
+| AUDIT.VB_AUDIT_LOG | 对外部表audit.VB_AUDIT_LOG中审计日志的查询权限。 |
+| pg_query_audit     | 对函数pg_query_audit中审计记录的查询权限。       |
+| COPY               | 使用COPY命令对审计日志进行操作。                 |
+
+**表 4** 安全员权限列表
+
+| PRIVILEGE类型                 | 说明                                              |
+| ----------------------------- | ------------------------------------------------- |
+| CREATE SECURITY LABEL         | 创建敏感标记。                                    |
+| DROP SECURITY LABEL           | 删除敏感标记。                                    |
+| SECURITY LABEL ON             | 对数据库对象设置敏感标记。                        |
+| PG_SECLABEL                   | 对数据字典PG_SECLABEL的查询权限。                 |
+| PG_SHSECLABEL                 | 对数据字典PG_SHSECLABEL的查询权限。               |
+| PG_OGMAC_SECLABEL             | 对数据字典PG_OGMAC_SECLABEL的查询权限。           |
+| PG_RLSPOLICY                  | 对系统表PG_RLSPOLICY的查询权限。                  |
+| CREATE POLICY                 | 创建行安全策略。                                  |
+| ALTER POLICY                  | 修改行安全策略。                                  |
+| DROP POLICY                   | 删除行安全策略。                                  |
+| ALTER TABLE                   | 启用/禁用表上的行安全策略。                       |
+| CREATE RESOURCE LABEL         | 创建资源池。                                      |
+| ALTER RESOURCE LABEL          | 修改资源池。                                      |
+| DROP RESOURCE LABEL           | 删除资源池。                                      |
+| CREATE MASKING POLICY         | 创建审计脱敏策略。                                |
+| ALTER MASKING POLICY          | 修改审计脱敏策略。                                |
+| DROP MASKING POLICY           | 删除审计脱敏策略。                                |
+| CREATE AUDIT POLICY           | 创建审计策略。                                    |
+| ALTER AUDIT POLICY            | 修改审计策略。                                    |
+| DROP AUDIT POLICY             | 删除审计策略。                                    |
+| GS_POLICY_LABEL               | 对系统表GS_POLICY_LABEL的查询权限。               |
+| GS_AUDITING_POLICY            | 对系统表GS_AUDITING_POLICY的查询权限。            |
+| GS_AUDITING_POLICY_ACCESS     | 对系统表GS_AUDITING_POLICY_ACCESS的查询权限。     |
+| GS_AUDITING_POLICY_PRIVILEGES | 对系统表GS_AUDITING_POLICY_PRIVILEGES的查询权限。 |
+| GS_AUDITING_POLICY_FILTERS    | 对系统表GS_AUDITING_POLICY_FILTERS的查询权限。    |
+| GS_LABEL                      | 对视图GS_LABELS的查询权限。                       |
+| GS_MASKING                    | 对视图GS_MASKING的查询权限。                      |
+| GS_AUDITING                   | 对视图GS_AUDITING的查询权限。                     |
+| GS_AUDITING_ACCESS            | 对视图GS_AUDITING_ACCESS的查询权限。              |
+| GS_AUDITING_PRIVILEGE         | 对视图GS_AUDITING_PRIVILEGE的查询权限。           |
+| GA_MASKING_POLICY             | 对视图GS_MASKING_POLICY的查询权限。               |
+| GS_MASKING_POLICY_FILTER      | 对视图GS_MASKING_POLICY_FILTER的查询权限。        |
+| GS_MASKING_POLICY_ACTIONS     | 对视图GS_MASKING_POLICY_ACTION的查询权限。        |
+
+**表 5** 系统管理员权限列表 
+
+| PRIVILEGE类型      | 说明                                                   |
+| ------------------ | ------------------------------------------------------ |
+| GRANT/REVOKE       | 增加/移除成员关系。要求成员和父成员管理类型一致。      |
+| pg_dump/pg_restore | 只允许系统管理员使用pg_dump/pg_restore对数据进行操作。 |
+
+**表 6** 共有权限列表
+
+| PRIVILEGE类型    | 说明                                                         |
+| ---------------- | ------------------------------------------------------------ |
+| SET              | 设置会话参数。安全管理参数和审计管理参数只允许相应的安全管理员和审计管理员进行管理。 |
+| CREATE ROLE/USER | 创建角色/用户，只允许创建同类型的管理员用户。                |
+| ALTER ROLE/USER  | 修改角色/用户信息，要求被修改者与执行者管理类型一致。        |
+| DROP ROLE/USER   | 删除角色/用户， 要求执行用户与被删除者管理类型一致。         |
+

@@ -1,0 +1,103 @@
+# 无过度损失的自动恢复
+
+## 功能描述
+
+Vastbase G100支持无过度损失的自动恢复，即当数据库由于GUC参数无效导致进程启动失败时，数据库可以通过单用户single模式登录进入维护模式，并通过该模式修改无效的guc参数。
+
+数据库通过单用户single模式登录时，将模式信息记录到全局上下文中，后续对GUC参数校验时上报错误信息，进行正常执行不退出，修改完成后用户可手动退出。
+
+## 注意事项
+
+- 本特性仅支持在Vastbase G100 2.2 Build 12及以后版本使用。
+- 数据库正常启动时，不能通过single单用户模式登录。
+- 不可通过single单用户模式修改不支持alter system方式修改的参数。具体参数类别信息参考[重设参数](重设参数.md)。
+
+## 操作步骤
+
+1、切换到数据库安装目录下的bin目录下，当安装为标准化安装时，路径如下：
+
+```shell
+cd /home/vastbase/local/vastbase/bin
+```
+
+2、使用单用户模式登录：
+
+```shell
+vastbase --single -D ;
+```
+
+3、修改系统参数：
+
+```sql
+alter system set parameter TO value;
+```
+
+4、退出当前编辑。
+
+5、启动数据库。
+
+```shell
+vb_ctl start
+```
+
+## 示例
+
+**前提条件：**guc参数设置错误，数据库无法正常启动。
+
+> <div align="left"><img src="image/img1.png" style="zoom:75%"></div>
+>
+> 本例以错误示例配置文件中`password_force_alter = offff;`为例。
+
+1、查看数据库状态。
+
+```shell
+vb_ctl status
+```
+
+数据库无法正常启动，此时状态为：
+
+```shell
+[2023-02-20 18:17:49.995][10800][][vb_ctl]: vb_ctl status,datadir is /home/vastbase/data/vastbase
+no server running
+```
+
+2、切换进入数据库安装目录下使用单用户模式登陆数据库。
+
+```shell
+cd /home/vastbase/local/vastbase/bin
+./vastbase --single -D /home/vastbase/data/vastbase --ignore_system_indexes=on --enable_indexscan=off --enable_bitmapscan=off vastbase
+```
+
+进入修改参数编辑模式：
+
+```shell
+ [BACKEND] WARNING:  parameter "password_force_alter" can not set to "offff"
+
+PostgreSQL stand-alone backend 9.2.4
+backend>
+```
+
+3、在编辑模式下修改password_force_alter参数的值。
+
+```sql
+alter system set password_force_alter to off;
+```
+
+4、ctrl+d键退出当前编辑模式。
+
+5、启动数据库。
+
+```shell
+vb_ctl start
+```
+
+数据库成功启动，回显的部分结果为：
+
+```shell
+[2023-02-20 18:22:33.135][10806][][vb_ctl]:  done
+[2023-02-20 18:22:33.135][10806][][vb_ctl]: server started (/home/vastbase/data/vastbase)
+```
+
+### 相关链接
+
+[GUC参数说明](GUC参数说明.md)、[重设参数](重设参数.md)

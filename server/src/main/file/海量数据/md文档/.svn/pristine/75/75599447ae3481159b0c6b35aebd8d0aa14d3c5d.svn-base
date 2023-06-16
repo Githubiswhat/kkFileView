@@ -1,0 +1,96 @@
+##### 条件语句
+
+**功能描述**
+
+条件语句的主要作用判断参数或者语句是否满足已给定的条件，根据判定结果执行相应的操作。
+
+**语法格式**
+
+Vastbase有五种形式的IF：
+
+- IF_THEN
+
+IF_THEN::=
+
+<div align="left"><img src="image/IF_THEN.png" style="zoom:50%")</div>      
+
+IF_THEN语句是IF的最简单形式。如果条件为真，statements将被执行。否则，将忽略它们的结果使该IF_THEN语句执行结束。
+
+- IF_THEN_ELSE
+
+IF_THEN_ELSE::=
+
+<div align="left"><img src="image/IF_THEN_ELSE.png" style="zoom:50%")</div>    
+
+ 
+
+IF_THEN_ELSE语句增加了ELSE的分支，可以声明在条件为假的时候执行的语句。
+
+- IF_THEN_ELSE IF
+
+IF语句可以嵌套，嵌套方式如下：
+
+```
+IF sex = 'm' THEN 
+  pretty_sex := 'man'; 
+ELSE 
+  IF sex = 'f' THEN 
+    pretty_sex := 'woman'; 
+  END IF; 
+END IF;
+```
+
+这种形式实际上就是在一个IF语句的ELSE部分嵌套了另一个IF语句。因此需要一个END IF语句给每个嵌套的IF，另外还需要一个END IF语句结束父IF-ELSE。如果有多个选项，可使用下面的形式。
+
+- IF_THEN_ELSIF_ELSE
+
+IF_THEN_ELSIF_ELSE::=
+
+<div align="left"><img src="image/IF_THEN_ELSIF_ELSE.jpg" style="zoom:50%")</div>     
+
+- IF_THEN_ELSEIF_ELSE
+
+ELSEIF是ELSIF的别名。
+
+**示例**
+
+1、创建存储过程。
+
+```
+CREATE OR REPLACE PROCEDURE proc_control_structure(i in integer)  
+AS 
+  BEGIN 
+    IF i > 0 THEN 
+     raise info 'i:% is greater than 0. ',i;  
+    ELSIF i < 0 THEN 
+      raise info 'i:% is smaller than 0. ',i;  
+    ELSE 
+      raise info 'i:% is equal to 0. ',i;  
+    END IF; 
+    RETURN; 
+  END; 
+/ 
+```
+
+2、调用存储过程。
+
+```
+CALL proc_control_structure(3); 
+```
+
+结果显示如下：
+
+```
+INFO:  i:3 is greater than 0. 
+-----------------------------
+ proc_control_structure 
+
+(1 row)
+```
+
+3、删除存储过程 
+
+```
+DROP PROCEDURE proc_control_structure;
+```
+

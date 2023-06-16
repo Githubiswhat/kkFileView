@@ -1,0 +1,138 @@
+f---
+
+## headless: true
+
+- [关于Vastbase G100]({{< relref "./doc/AboutVastbaseG100/关于Vastbase-G100.md" >}})
+
+  -   [产品特性]({{< relref "./doc/AboutVastbaseG100/产品特性.md" >}})
+
+  -   [核心功能]({{< relref "./doc/AboutVastbaseG100/核心功能.md" >}})
+
+  -   [产品优势]({{< relref "./doc/AboutVastbaseG100/产品优势.md" >}})
+
+  -   [应用场景]({{< relref "./doc/AboutVastbaseG100/应用场景1.md" >}})
+- [版本介绍]
+- [开发者指南]({{< relref "./doc/开发者指南/开发者指南.md" >}})
+  - [SQL语法]
+    - [ALTER TABLE PARTITION]({{< relref "./doc/开发者指南/ALTER-TABLE-PARTITION.md" >}})
+    - [CREATE TABLE SUBPARTITION]({{< relref "./doc/开发者指南/CREATE-TABLE-SUBPARTITION.md" >}})
+  - [外部数据封装器]
+    - [POSTGRES_FDW]({{< relref "./doc/开发者指南/POSTGRES_FDW.md" >}})
+  - [[AI特性]
+    - [AI4DB数据库自治运维]({{< relref "./doc/开发者指南/AI4DB-数据库自治运维.md" >}})
+      - [Anomaly detection: 异常检测]({{< relref "./doc/开发者指南/AI4DB-Anomaly-detection-异常检测.md" >}})
+      - [SQL Rewriter: SQL语句改写]({{< relref "./doc/开发者指南/AI4DB-SQL-Rewriter-SQL语句改写.md" >}})
+    - [系统表和系统视图]
+      - [系统表]
+        - [PG_COLLATION]({{< relref "./doc/开发者指南/PG_COLLATION.md" >}})
+        - [PG_DATABASE]({{< relref "./doc/开发者指南/PG_DATABASE.md" >}})
+- [管理员指南]({{< relref "./doc/管理员指南/管理员指南.md" >}})
+  - [数据库使用]
+    - [创建和管理分区表]
+      - [分区表概述]({{< relref "./doc/管理员指南/分区表概述.md" >}})
+      - [支持两级分区]({{< relref "./doc/管理员指南/支持两级分区.md" >}})
+    - [事件触发器]({{< relref "./doc/管理员指南/事件触发器.md" >}})
+  - [安全性]
+    - [安全审计]
+      - [审计密钥管理和加密运算]({{< relref "./doc/管理员指南/审计密钥管理和加密运算.md" >}})
+    - [数据库启动及安装包完整性校验]({{< relref "./doc/管理员指南/数据库启动及安装包完整性校验.md" >}})
+    - [无过度损失的自动恢复]({{< relref "./doc/管理员指南/无过度损失的自动恢复.md" >}})
+  - [备份与恢复]
+    - [逻辑备份与恢复]
+      - [vb_dump]({{< relref "./doc/管理员指南/vb_dump.md" >}})
+  - [日志参考]
+    - [审计日志]
+      - [审计日志加密存储]({{< relref "./doc/管理员指南/审计日志加密存储.md" >}})
+      - [审计日志自动转存]({{< relref "./doc/管理员指南/审计日志自动转存.md" >}})
+- [兼容性手册]({{< relref "./doc/兼容性手册/兼容性手册.md" >}})
+  - [Oracle兼容性]({{< relref "./doc/兼容性手册/Oracle兼容性/Oracle兼容性.md" >}})
+    - [函数]
+      - [EMPTY_CLOB]({{< relref "./doc/兼容性手册/Oracle兼容性/EMPTY_CLOB函数.md" >}})
+    - [内置包]
+      - [DBMS_LOB]({{< relref "./doc/兼容性手册/Oracle兼容性/DBMS_LOB.md" >}})
+      - [DBMS_SESSION]({{< relref "./doc/兼容性手册/Oracle兼容性/DBMS_SESSION.md" >}})
+      - [DBMS_UTILITY]({{< relref "./doc/兼容性手册/Oracle兼容性/DBMS_UTILITY.md" >}})
+    - [SQL语法]
+      - [CREATE PACKAGE]({{< relref "./doc/兼容性手册/Oracle兼容性/Oracle兼容性-CREATE-PACKAGE.md" >}})
+      - [CREATE PACKAGE BODY]({{< relref "./doc/兼容性手册/Oracle兼容性/Oracle兼容性-CREATE-PACKAGE-BODY.md" >}})
+      - [CREATE TRIGGER]({{< relref "./doc/兼容性手册/Oracle兼容性/Oracle兼容性-CREATE-TRIGGER.md" >}})
+      - [CREATE TYPE]({{< relref "./doc/兼容性手册/Oracle兼容性/CREATE-TYPE.md" >}})
+      - [支持存储和查询创建视图的注释内容]({{< relref "./doc/兼容性手册/Oracle兼容性/支持存储和查询创建视图的注释内容.md" >}})
+    - [PL/SQL]
+      - [匿名块中支持占位符作为赋值表达式左值]({{< relref "./doc/兼容性手册/Oracle兼容性/匿名块中支持占位符作为赋值表达式左值.md" >}})
+    - [特性参数]
+      - [参数名重载]({{< relref "./doc/兼容性手册/Oracle兼容性/参数名重载.md" >}})
+  - [MySQL兼容性]({{< relref "./doc/兼容性手册/MySQL兼容性/MySQL兼容性.md" >}})
+    - [数据类型]({{< relref "./doc/兼容性手册/MySQL兼容性/MySQL兼容性-数据类型.md" >}})
+    - [操作符]
+      - [+运算符精度处理]({{< relref "./doc/兼容性手册/MySQL兼容性/+运算符精度处理.md" >}})
+    - [SQL语法]
+      - [CHANGE COLUMN]({{< relref "./doc/兼容性手册/MySQL兼容性/CHANGE-COLUMN.md" >}})
+      - [CREATE DATABASE]({{< relref "./doc/兼容性手册/MySQL兼容性/CREATE-DATABASE.md" >}})
+      - [CREATE TABLE]({{< relref "./doc/兼容性手册/MySQL兼容性/CREATE-TABLE.md" >}})
+      - [CREATE TABLE AS]({{< relref "./doc/兼容性手册/MySQL兼容性/CREATE-TABLE-AS.md" >}})
+      - [CREATE TRIGGER]({{< relref "./doc/兼容性手册/MySQL兼容性/CREATE-TRIGGER.md" >}})
+      - [DELETE]({{< relref "./doc/兼容性手册/MySQL兼容性/DELETE.md" >}})
+      - [IGNORE|FORCE INDEX]({{< relref "./doc/兼容性手册/MySQL兼容性/IGNORE-FORCE-INDEX.md" >}})
+      - [INNER JOIN]({{< relref "./doc/兼容性手册/MySQL兼容性/INNER-JOIN.md" >}})
+      - [INSERT IGNORE]({{< relref "./doc/兼容性手册/MySQL兼容性/INSERT-IGNORE.md" >}})
+      - [INSERT INTO VALUE]({{< relref "./doc/兼容性手册/MySQL兼容性/INSERT-INTO-VALUE.md" >}})
+      - [UPDATE]({{< relref "./doc/兼容性手册/MySQL兼容性/UPDATE.md" >}})
+      - [关联的同名字段不需要指定表名]({{< relref "./doc/兼容性手册/MySQL兼容性/关联的同名字段不需要指定表名.md" >}})
+      - [支持在UNION [ALL] 语句中使用ORDER BY 子句]({{< relref "./doc/兼容性手册/MySQL兼容性/支持在UNION [ALL] 语句中使用ORDER BY 子句.md" >}})
+      - [支持UUID到字符串类型的隐式转换]({{< relref "./doc/兼容性手册/MySQL兼容性/支持UUID到字符串类型的隐式转换.md" >}})
+      - [支持无关联条件JOIN]({{< relref "./doc/兼容性手册/MySQL兼容性/无关联条件JOIN.md" >}})
+    - [函数]
+      - [时间和日期处理函数]
+        - [CURRENT_DATE]({{< relref "./doc/兼容性手册/MySQL兼容性/CURRENT_DATE函数.md" >}})
+        - [DATE]({{< relref "./doc/兼容性手册/MySQL兼容性/DATE函数.md" >}})
+        - [DATEDIFF]({{< relref "./doc/兼容性手册/MySQL兼容性/DATEDIFF函数.md" >}})
+        - [UNIX_TIMESTAMP]({{< relref "./doc/兼容性手册/MySQL兼容性/UNIX_TIMESTAMP函数.md" >}})
+      - [字符和数据类型处理函数]
+        - [CONV]({{< relref "./doc/兼容性手册/MySQL兼容性/CONV函数.md" >}})
+        - [FIELD]({{< relref "./doc/兼容性手册/MySQL兼容性/FIELD函数.md" >}})
+        - [LOCATE]({{< relref "./doc/兼容性手册/MySQL兼容性/LOCATE函数.md" >}})
+        - [SUBSTRING_INDEX]({{< relref "./doc/兼容性手册/MySQL兼容性/SUBSTRING_INDEX函数.md" >}})
+      - [条件表达式函数]
+        - [ISNULL]({{< relref "./doc/兼容性手册/MySQL兼容性/ISNULL函数.md" >}})
+      - [JSON函数]
+        - [JSON_VALID]({{< relref "./doc/兼容性手册/MySQL兼容性/JSON_VALID函数.md" >}})
+    - [PL/SQL]
+      - [DECLARE-CONDITION]({{< relref "./doc/兼容性手册/MySQL兼容性/DECLARE-CONDITION.md" >}})
+      - [DECLARE EXIT HANDLER]({{< relref "./doc/兼容性手册/MySQL兼容性/DECLARE-EXIT-HANDLER.md" >}})
+      - [LABEL: [DECLARE]BEGIN]({{< relref "./doc/兼容性手册/MySQL兼容性/LABEL-DECLARE-BEGIN.md" >}})
+      - [支持@i:=0方式赋值]({{< relref "./doc/兼容性手册/MySQL兼容性/支持@i=0方式赋值.md" >}})
+  - [PostgreSQL兼容性]({{< relref "./doc/兼容性手册/PostgreSQL兼容性/PostgreSQL兼容性.md" >}})
+  - [SQL Server兼容性]({{< relref "./doc/兼容性手册/SQLServer兼容性/SQLServer兼容性.md" >}})
+    - [数据类型及操作符]
+      - [DATETIME2类型]({{< relref "./doc/兼容性手册/SQLServer兼容性/DATETIME2类型.md" >}})
+      - [NTEXT类型]({{< relref "./doc/兼容性手册/SQLServer兼容性/NTEXT类型.md" >}})
+      - [SMALLMONEY类型]({{< relref "./doc/兼容性手册/SQLServer兼容性/SMALLMONEY类型.md" >}})
+      - [SQL_VARIANT类型]({{< relref "./doc/兼容性手册/SQLServer兼容性/SQL_VARIANT类型.md" >}})
+      - [TABLE类型]({{< relref "./doc/兼容性手册/SQLServer兼容性/TABLE类型.md" >}})
+      - [UNIQUEIDENTIFIER类型]({{< relref "./doc/兼容性手册/SQLServer兼容性/UNIQUEIDENTIFIER类型.md" >}})
+      - [VARBINARY类型]({{< relref "./doc/兼容性手册/SQLServer兼容性/VARBINARY类型.md" >}})
+      - [字符操作符+]({{< relref "./doc/兼容性手册/SQLServer兼容性/字符操作符+.md" >}})
+    - [函数]
+      - [时间和日期处理函数]
+        - [DATEADD]({{< relref "./doc/兼容性手册/SQLServer兼容性/DATEADD函数.md" >}})
+        - [DATEDIFF]({{< relref "./doc/兼容性手册/SQLServer兼容性/DATEDIFF函数.md" >}})
+        - [DATENAME]({{< relref "./doc/兼容性手册/SQLServer兼容性/DATENAME函数.md" >}})
+        - [DATEPART]({{< relref "./doc/兼容性手册/SQLServer兼容性/DATEPART函数.md" >}})
+        - [GETDATE]({{< relref "./doc/兼容性手册/SQLServer兼容性/GETDATE函数.md" >}})
+        - [SYSDATETIME]({{< relref "./doc/兼容性手册/SQLServer兼容性/SYSDATETIME函数.md" >}})
+      - [条件表达式函数]
+        - [ISNULL]({{< relref "./doc/兼容性手册/SQLServer兼容性/ISNULL函数.md" >}})
+      - [统计信息函数]
+        - [COUNT_BIG]({{< relref "./doc/兼容性手册/SQLServer兼容性/COUNT_BIG函数.md" >}})
+      - [字符和数据类型处理函数]
+        - [CHARINDEX]({{< relref "./doc/兼容性手册/SQLServer兼容性/CHARINDEX函数.md" >}})
+        - [CONVERT]({{< relref "./doc/兼容性手册/SQLServer兼容性/CONVERT函数.md" >}})
+        - [LEN]({{< relref "./doc/兼容性手册/SQLServer兼容性/LEN函数.md" >}})
+        - [STR]({{< relref "./doc/兼容性手册/SQLServer兼容性/STR函数.md" >}})
+    - [SQL语法]
+      - [OUTPUT]({{< relref "./doc/兼容性手册/SQLServer兼容性/OUTPUT.md" >}})
+    - [PL/SQL]
+      - [TRY CATCH]({{< relref "./doc/兼容性手册/SQLServer兼容性/TRY-CATCH.md" >}})
+- [工具参考]
+  - [vb_initdb]({{< relref "./doc/工具参考/vb_initdb.md" >}})

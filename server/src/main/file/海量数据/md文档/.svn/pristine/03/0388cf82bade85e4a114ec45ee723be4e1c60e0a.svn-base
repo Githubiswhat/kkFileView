@@ -1,0 +1,48 @@
+# 关于本文档
+
+## 概述
+
+本文档提供了Vastbase G100数据库常用的管理员操作，包括集群管理、备份恢复、例行维护等内容，方便管理员更好地使用数据库。
+
+## 读者对象
+
+适用于所有使用Vastbase G100数据库的管理员。
+
+## 符号约定
+
+<table style="border-collapse:collapse;">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 79%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="background-color:#F2F2F2">符号</th>
+<th style="background-color:#F2F2F2">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="border:1px solid #D7D7D7"><img src="figures/figure1.png" style="width:0.58264in;height:0.26111in" /></td>
+<td style="border:1px solid #D7D7D7">表示如不避免则将会导致死亡或严重伤害的具有高等级风险的危害。</td>
+</tr>
+<tr class="even">
+<td style="border:1px solid #D7D7D7"><img src="figures/figure2.png" style="width:0.58264in;height:0.26111in" /></td>
+<td style="border:1px solid #D7D7D7">表示如不避免则可能导致死亡或严重伤害的具有中等级风险的危害。</td>
+</tr>
+<tr class="odd">
+<td style="border:1px solid #D7D7D7"><img src="figures/figure3.png" style="width:0.58264in;height:0.26111in" /></td>
+<td style="border:1px solid #D7D7D7">表示如不避免则可能导致轻微或中度伤害的具有低等级风险的危害。</td>
+</tr>
+<tr class="even">
+<td style="border:1px solid #D7D7D7"><img src="figures/figure4.png" style="width:0.58264in;height:0.26111in" /></td>
+<td style="border:1px solid #D7D7D7">用于传递设备或环境安全警示信息。如不避免则可能会导致设备损坏、数据丢失、设备性能降低或其它不可预知的结果。
+<br />“须知”不涉及人身伤害。</td>
+</tr>
+<tr class="odd">
+<td style="border:1px solid #D7D7D7"><img src="figures/figure5.png" style="width:0.58264in;height:0.26111in" /></td>
+<td style="border:1px solid #D7D7D7">对正文中重点信息的补充说明。
+<br />“说明”不是安全警示信息，不涉及人身、设备及环境伤害信息。</td>
+</tr>
+</tbody>
+</table>     

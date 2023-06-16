@@ -1,0 +1,18 @@
+
+-   array_agg(expression)
+
+    描述：将所有输入值（包括空）连接成一个数组。
+
+    入参取值范围：anyarray和anynonarray。
+
+    返回类型：参数类型的数组。
+
+    示例：
+
+```
+vastbase=# SELECT ARRAY_AGG(sr_fee) FROM tpcds.store_returns WHERE sr_customer_sk = 2;
+       array_agg   
+----------------
+     {22.18,63.21}
+(1 row)
+```

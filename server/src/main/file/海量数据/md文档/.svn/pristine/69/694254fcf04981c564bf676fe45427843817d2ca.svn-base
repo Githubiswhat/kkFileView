@@ -1,0 +1,208 @@
+# V2.2 Build 12
+
+## 版本升级指南
+
+**版本号说明**<br>
+ 例：V2.2 Build 12<br>
+    大版本：2.2<br>
+    Build：12<br>
+    Patch：补丁号<br>
+
+  1、不同大版本以及不同Build的升级必须使用方法一升级<br>
+  2、补丁升级请遵循以下规则<br>
+
+| 升级前\升级后   | V2.2 Build 12 |
+| :-------------- | :------------ |
+| <V2.2 Build 12  | 重新初始化    |
+| >=V2.2 Build 12 | N/A           |
+
+## 升级方法介绍
+
+**方法一： 以下简称为“重新初始化”**
+
+  > 所有用户自定义的对象和数据都需要从旧库导出，再导入到新库。
+  >
+  > 1、使用vb_dump导出所有对象和数据。
+  >
+  > 2、使用数据库安装程序安装新的数据库。
+  >
+  > 3、开启数据库。
+  >
+  > 4、使用vb_restore导入步骤1中的备份数据到新库中。
+
+**方法二： 以下简称为“vpatch工具升级”**
+
+  > 参考[使用vpatch进行版本控制](../快速入门/使用vpatch进行版本控制.md)。
+
+**方法三：以下简称为“替换升级”**
+
+  > 直接替换安装目录并重启数据库即可，步骤如下：
+  >
+  > 1、 停止数据库。
+  >
+  > 2、 解压安装包，把bin、include、lib、share四个目录替换到数据库安装目录下。
+  >
+  > 具体操作步骤如下：
+  >
+  > (1)解压安装包，第一次解压(安装包以实际为准)。
+  >
+  > ```
+  > tar xf Vastbase-G100-installer-2.2_Build_5.161-openeuler_20.03-aarch64_kunpeng-20220812.tar.gz
+  > ```
+  >
+  > <div align="left"><img src="figures/升级1 (1).png" style="zoom:100%")</div>  
+  >
+  > (2)解压后进入vastbase-installer目录，进行第二次解压。
+  >
+  > ```
+  > tar xf Vastbase-G100-2.2_Build_5.161-openeuler_20.03-aarch64_kunpeng.tar.gz
+  > ```
+  >
+  > <div align="left"><img src="figures/升级1 (2).png" style="zoom:100%")</div>  
+  >
+  > (3)第三次解压。
+  >
+  > ```
+  > tar xf Vastbase-G100-2.2_Build_5.161-openeuler-64bit.tar.gz
+  > ```
+  >
+  > <div align="left"><img src="figures/升级1 (3).png" style="zoom:110%" )</div>  
+  >
+  > (4)将解压之后的bin、include、lib、share四个目录替换到现有数据库安装目录下。
+  >
+  > 3、开启数据库。
+
+## Vastbase V2.2 Build 12
+
+### 发布日期
+
+2023年02月28日
+
+### 新特性
+
+1、新增MySQL兼容性：
+
+- 新增了对以下函数的支持：
+  - [unix_timestamp](unix_timestamp.md)，获取时间戳。
+  - [substring_index](substring_index.md)，按照指定的分隔符划分字符串，返回以分隔符分割的原字符串中对应索引位的子字符串。
+  - [conv](conv.md)，用于将数值从一种进制转换为另一种进制，函数返回值为目标进制字符串的形式。
+  - [date](date.md)，用于提取日期或日期时间表达式的中的日期部分。
+  - [CURRENT_DATE](CURRENT_DATE.md)，获取当前日期（不包含时分秒）。
+  - [FIELD](FIELD.md)，用于查找特定字符串在给出的若干个字符串序列中的位置。
+  - [ISNULL](ISNULL.md)，用于判读输入的参数是否为null，如果输入参数为null返回true，否则返回false。
+  - [JSON_VALID](JSON_VALID.md)，用于判读输入值是否为合法的JSON数据。如果输入值是合法的JSON数据则返回1，否则返回0。
+  - [LOCATE](LOCATE.md)，用于查找子字符串在原字符串中的位置。
+  - [DATEDIFF](DATEDIFF.md)，用于返回两个日期之间的天数。
+- 子查询可以识别到外层查询字段别名。
+- 支持使用“+”运算符时，若左值为“0”且右值为任意带数字的字符串（charnum），则` 0 + charnum`将得到与原字符串charnum中相同精度的浮点数或者整数，参见[+运算符精度处理](+运算符精度处理.md)。
+- 支持使用UNION [ALL]语句将两个或多个查询结果合并，并通过ORDER BY子句排序，参见[支持在UNION [ALL] 语句中使用ORDER BY 子句](支持在UNION -ALL-语句中使用ORDER-BY-子句.md)。
+- 支持SELECT [@i:=expr方式赋值](支持@i:=expr方式赋值.md)查询，输出查询结果并将查询结果存储到"@i"中，若查询结果有多行，则存储最后一行数据。
+- 支持多表关联时[同名字段不需要指定表名](关联的同名字段不需要指定表名.md)。
+- 支持[INNER JOIN](INNER-JOIN.md)连接条件使用WHERE子句。
+- 支持使用[DECLARE ... CONDITION](DECLARE-CONDITION.md)语句声明一个命名的错误条件，可以为错误号或者 SOLSTATE重命名，在异常处理中可以使用声明的 CONDITION。
+- 支持在begin...end代码块中设置label。
+- 异常处理DECLARE CONTINUE HANDLER。
+- 支持IGNORE INDEX，参见[IGNORE|FORCE INDEX语法](IGNORE-FORCE-INDEX,md)。
+- 支持用户使用delimiter定义分隔符。在创建触发器SQL末尾可以不使用固定的结尾，整个触发器的语法以delimiter定义的结束符作为结束，参见[CREATE TRIGGER](CREATE-TRIGGER.md)。
+- 异常处理，完善[declare exit handler](declare-exit-handler.md)语句。
+- [CREATE TABLE AS](CREATE-TABLE-AS.md)支持定义表字段属性。
+- 支持在初始化实例或创建数据库时，通过参数pad_attribute控制字符串等值查询时是否忽略空格匹配，参见[vb_initdb](vb_initdb.md)、[create database](create-database.md)；支持在建表时指定表级校对规则，参见[CREATE TABLE](CREATE-TABLE.md)。
+- 支持escape语法，参见[模式匹配操作符](模式匹配操作符.md)。
+- 支持多表关联[update](update.md)和[delete](delete.md)语法。
+- 支持在INSERT语句中使用[IGNORE](INSERT-IGNORE.md)选项。
+- [CREATE TABLE](CREATE-TABLE.md)语法增强，支持在建表时指定存储引擎和字符集。
+- 支持[无关联条件的JOIN](无关联条件JOIN.md)，返回结果为笛卡尔积的形式。
+- 支持INSERT INTO语法使用value插入数据，参见[INSERT INTO...VALUE...](INSERT-INTO-VALUE.md)。
+- 支持使用[CHANGE COLUMN](CHANGE-COLUMN.md)语法修改表列的名字和类型。
+
+2、新增Oracle兼容性：
+
+- 创建视图时支持with read only功能。
+- [支持保存和查看创建视图时的注释信息](支持存储和查询创建视图的注释内容.md)。
+- 编译控制选项pragma serially_reusable，可以将package设定为连续可复用包，此选项可以使得对应package分配的内存在调用后被释放，复用package时包内变量都被初始化为其默认值，参见[CREATE PACKAGE](CREATE-PACKAGE.md)、[CREATE PACKAGE BODY](CREATE-PACKAGE-BODY.md)。
+- DBLINK支持package同义词。
+- 函数重载。
+- 在创建type时，支持对成员函数进行重写，参见[CREATE TYPE](CREATE-TYPE.md)。
+- 支持在[CREATE TRIGGER](CREATE-TRIGGER.md)的语句中包含触发器执行的PL/SQL块。
+- 支持内置包[DBMS_SESSION](DBMS_SESSION.md)的部分功能，该内置包提供了查询和设置会话相关状态的方法。
+- 支持当包体存在初始化块时，不同包体的初始化块/包体函数进行[相互调用](包体相互调用.md)。
+- 支持PL/SQL在匿名块中[使用占位符作为赋值表达式左值](匿名块中支持占位符作为赋值表达式左值.md)。
+
+- 新增了对以下函数的支持：
+  - [EMPTY_CLOB](EMPTY_CLOB.md)，用于构造空的LOB供后续使用流插入。
+
+3、新增SQL Server兼容性：
+
+- 新增了对以下函数的支持：
+  - [CHARINDEX](CHARINDEX.md)，在第二个字符表达式中搜索一个字符表达式，返回第一个表达式（如果发现存在）的开始位置。
+  - [STR](STR.md)，返回数字数据转换来的字符数据，具有指定长度和十进制精度。
+  - [SYSDATETIME](SYSDATETIME.md)，返回计算机的日期和时间，返回值为timestamp类型。
+  - [COUNT_BIG](COUNT_BIG.md)，返回表中的非空记录条数，返回值为bigint类型。
+  - [LEN](LEN.md)，返回字符串的字符数，不包含尾随空格。
+  - [DATENAME](DATENAME.md)，返回表示指定 date 的指定 datepart 的字符串，返回值为varchar类型。
+  - [DATEPART](DATEPART.md)，返回表示指定 date 的指定 datepart 的整数，返回值为整数类型。
+  - [DATEADD](DATEADD.md)，在日期中添加或减去指定的时间间隔。
+  - [CONVERT](CONVERT.md)，将表达式由一种数据类型转换为另一种数据类型，返回值为函数中指定数据类型。
+  - [GETDATE](GETDATE.md)，返回当前数据库系统的时间戳，函数的返回值为timestamp类型。
+  - [ISNULL](ISNULL.md)，判断表达式的值是否为NULL。当表达式值被判断为NULL时，使用指定的值替换NULL值。
+  - [DATEDIFF](DATEDIFF.md)，计算两个日期之间的时间间隔。
+- 新增了对以下数据类型的支持：
+  - [varbinary](varbinary.md)，可变长度二进制字符串类型，存储的是二进制数据。
+  - [table](table.md)，作为表值参数，以INPUT输入形式传递到存储过程或函数中。
+  - [sql_variant](sql_variant.md)，保存非用户定义类型（除特殊说明的类型）的值，并保留原类型信息。
+  - [ntext](ntext.md)，可变长度，用于存储大量Unicode文本数据。
+  - [smallmoney](smallmoney.md)，代表货币或货币值的数据类型。
+  - [datetime2($n)](datetime2.md)，datetime2类型结合了24小时制时间的日期，精确到小数点后6位。
+  - [uniqueidentifier](uniqueidentifier.md)，用于确保表的多个副本中唯一标识行。
+
+- 支持对字符串进行加法操作，字符串相加的操作作为字符串的连接返回，参见[字符操作符+](字符操作符+.md)。
+- 支持使用[TRY CATCH](TRY-CATCH.md)捕捉异常。
+- 支持[OUTPUT](OUTPUT.md)语法，返回受SQL语句影响的各行中的信息。
+
+4、支持更新IP白名单的函数和查询IP白名单的函数，提供给VDS实现相关功能。
+
+5、支持数据库模板维护。
+
+6、支持OEM标识定制，包括安装介质名称、vsql登录显示的产品标签、版本查询函数显示，也可以使用编译参数控制OEM信息和安装包OEM信息。
+
+7、支持[无过度损失的自动恢复](无过度损失的自动恢复.md)，即当数据库由于GUC参数无效导致进程启动失败时，数据库可以通过单用户single模式登录进入维护模式，并通过该模式修改无效的guc参数。
+
+8、支持[数据库启动及安装包完整性校验](数据库启动及安装包完整性校验.md)，对重要文件可以生成对应的MD5文件、提供MD5检验功能、提供恢复功能。
+
+9、支持当审计日志空间满后[审计日志自动转存](审计日志自动转存.md)备份的功能。
+
+10、支持对[审计日志加密存储](审计日志加密存储.md)。
+
+11、支持使用光电安辰密码卡实现密码卡的密钥管理和加密运算相关的审计，产生审计数据。
+
+12、[事件触发器](事件触发器.md)支持on schema条件和logon、logoff事件。
+
+13、支持[vb_dump](vb_dump)导出SQL文本格式生成insert语句时使用子命令\--table condition指定导出条件。
+
+14、支持[postgres_fdw](postgres_fdw.md)功能连接PostgreSQL 11数据库。
+
+14、[DBMS_LOB功能增强](DBMS_LOB功能增强.md)，新增支持的常量、函数、存储过程。
+
+15、[支持uuid到字符串类型的隐式转换](支持uuid到字符串类型的隐式转换.md)。
+
+16、支持分区表表结构变更后与普通表的分区交换，参见[ALTER TABLE PARTITION](ALTER-TABLE-PARTITION.md)。
+
+17、二级分区支持interval分区，详见[CREATE TABLE SUBPARTITION](CREATE-TABLE-SUBPARTITION.md)。
+
+18、支持内置包[DBMS_UTILITY](DBMS_UTILITY.md)包，提供了很多不同的子程序工具。
+
+平台适配情况如下：
+
+
+
+### 特性优化
+
+1、增强了分区裁剪功能，查询分区表用分区键进行like模糊匹配的条件过滤查询时，可以先通过分区裁剪，在查询规划阶段裁剪掉不需要的分区，只扫描满足条件的分区，提高查询性能。
+
+2、dblink性能优化，通过analyze表可能获得更多优化建议。
+
+3、基础算子性能提升。
+
+
+
+### 缺陷修复

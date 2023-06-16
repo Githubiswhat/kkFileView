@@ -1,0 +1,609 @@
+Dravlek Smart VPN Client
+Mozilla Firefox
+pgAdmin4
+XMind8
+getsoftware
+SotfwareChecker
+企业微信
+DBeaver
+Everything
+Git
+Mozilla Maintenance Service
+WinMerge
+VMware Horizon Agent
+typora 1.0.0版本以下
+PuTTY
+TortoiseGit
+Java SE Development Kit
+VMware Tools
+VNC Viewer
+TortoiseSVN
+IntelliJIDEACommunityEdition
+Notepad++
+MSBuild/NuGetIntegration
+Toolsfor.Net
+AzureTools.Notifications
+DotfuscatorandAnalyticsCommunityEdition语言包
+使用C#的多设备混合应用-模板-简体中文
+Roslyn语言服务
+AzureADAuthenticationConnectedService
+DotfuscatorSoftwareServices-CommunityEdition
+WindowsEspcPackage
+TypeScriptPowerTool
+JavaAutoUpdater
+WindowsSoftwareDevelopmentKitforWindowsStoreAppsDirectxx86Remote
+WindowsSoftwareDevelopmentKitforWindowsStoreAppsDirectxx64Remote
+VSUpdatecorecomponents
+DotfuscatorandAnalyticsCommunityEdition
+PreEmptiveAnalyticsClientzh-HansLanguagePack
+RoslynLanguageServices
+SSDT必备组件
+WCFDataServices Runtime
+vsupdate notification
+Toolsfor.Net -CHSLangPack
+WindowsEspcResourcePackage
+ISExpressApplicationCompatibilityDatabasefor
+WebDeploymentTool
+IIS Express
+Java Update
+WindowsSoftwareDevelopmentKitDirectX
+JavaSEDevelopmentKit
+VMwareTools
+Node.js
+VNCViewer
+瑞星ESM下一代网络版
+Nmap
+Npcap
+PyCharmCommunityEdition
+Wireshark
+Python
+Firefox
+MozillaMaintenanceService
+Foxmail
+Secoclient
+微信
+腾讯会议
+VMware Horizon Client
+联想
+戴尔
+惠普
+weLink
+智能会议助手
+VMware Horizon
+向日葵(企业版和企业客户端除外)
+TencentQQMail
+腾讯QQ
+百度网盘
+OWASPZedAttackProxy
+USBPcap
+MobaXterm
+XWin MobaX
+SgrmBroker
+SecurityHealthHost
+ApplicationFrameHost
+browser_broker
+TGitCache
+TortoiseProc
+wps
+MOTTY
+explorer
+StartMenuExperienceHost
+Windows Internal.ComposableShell.Experiences.Text Input.InputApp
+ShellExperienceHost
+filezilla
+WinMergeU
+LockApp
+Code
+cmd
+ssh
+ctfmon
+VwareView-RdeServer
+SystemSettings
+TrustedInstaller
+TiWorker
+smartscreen
+msiexec
+SystemProcess
+sqlwriter
+umtoolsd
+idea64
+fsnotifier
+java
+powershell
+CodeHelper
+node
+chrome
+notepad
+VMwareView-RdeServer
+MobaSCPRi
+sppsvc
+SearchProtocolHost
+SearchFilterHost
+SppExtComObj
+Ravservice
+Seccenadapterserver
+dllhost
+Epsrv
+Explore
+eptray
+SearchUI
+wlrmdr
+Cygtermd
+ssh-agent
+SogouCloud
+WinStore.App
+SogouImeBroker
+Audiodg
+SGTool
+LITSSVc
+ibmpmsvc
+ETDService
+igfxCUIServiceN
+wlanext
+DAX3API
+OneApp. IGCC. WinService
+ftscanmarhv
+horizon_client_service
+ftnlsv
+esif_uf
+Lenovo.Modern.ImController
+IntelAudioService
+LenovoPcManagerService
+LISFService
+SmartStandby
+SecoClientPromoteService
+RtkAudUService
+salwriter
+TbtP2pShortcutService
+UDClientService
+vmwsprrdpwks
+WMIRegistrationService
+WmiApSrv
+jhi_service
+tphkload
+vmware-usbarbitrator
+Locator
+AggregatorHost
+ETDCtrl
+igfxEMN
+PowerMgr
+tposd
+shtctky
+LenovoInternetSoftwareFramework
+SearchHost
+Widgets
+RuntimeBroker
+TextInputHost
+WXWork
+WXWorkweb
+msedge
+Cortana
+WXDrive
+LocationNotificationwindows
+语雀
+LenovoTray
+crashpad_handler
+wsctrl
+DesktopAssistant
+WSPluginHost
+AIMeetingmanager
+SecoClientS
+WidgetService
+msedgewebview
+vmware-view
+SDXHelper
+EMDriverAssist
+WeMail
+WeMailNode
+wpspdf
+promecefpluginhost
+WeChat
+WeChatPlayer
+WeChatAppEx
+WeChatOCR
+wemeetapp
+SystemSettingsBroker
+OneDrive
+UserooBEBroker
+LAVService
+usysdiag
+Lenovo.Modern.ImController.PluginHost.Device
+PhoneExperienceHost
+backgroundTaskHost
+wwmapp
+GameBar
+GameBarFTServer
+vmware-remotemks
+wpscloudsvr
+VSSVC
+OpenConsole
+WindowsTerminal
+Atiesrxx
+Amdfendrsr
+dasHost
+atieclxx
+spoo1sv
+ELANFPService
+LNBITSSvc
+Adminservice
+LenovoUti1ityService
+ftscarmgrhv
+QcomWlanSrvx
+ElanlapService
+SLBService
+Sunloginclient
+QQProtect
+VmiPrvSE
+Unsecapp
+SLBSafe
+AutoModeDetect
+corhost
+StartMeruExperienceHost
+SearchApp
+FrHotkeyUtility
+ApplicatiorFrameHost
+SLBSmartSearch
+MusNotifyIcon
+SsecurityHealthService
+MoUsoCoreWorker
+AppVShNotify
+jucheck
+She11ExperienceHost
+secoClientcs
+CompPkgSrv
+LeAppOM
+video.ui
+TXPlatform
+QQGuild
+WeChatUtility
+SLBrowser
+SearchFilterHosts
+STasks
+Chs IME
+Msbuild
+Devenv
+Mspdbsrv
+vmware-svi-ga
+Vcpkgsrv
+softwarechecker
+7-zip
+DrayTek Smart VPN Client
+合规软件检查工具
+jcef helper
+Taskmgr
+Subversion
+TAPD
+Docker
+VirtualBox
+火绒安全软件
+金山毒霸
+好压
+bandizip
+Myzip
+The Unarchiver
+Google Chrome
+Safari
+搜狗
+mtputty
+WinSCP
+VNC
+TightVNC
+Tabby
+Wezterm
+Xming X Windows Server
+AnyDesk
+Hillstone Secure Connect
+HbuilderX
+draw.io
+FreeFileSync
+obs studio
+Excalidraw
+SQLQueryStress
+Xquartz
+Graphviz
+Rustup
+dhcpsrv
+textmate
+fiddler
+有道词典
+MockPlus
+Intel Vtune(TM) Profiler
+阿里云盘
+utools
+迅捷图片转换器
+KK录像机
+夸克网盘
+腾讯微云
+3CDaemon
+天翼云盘
+VMware vCenter Converter Standalone
+Winpcap
+SpaceSniffer
+Cyotek WebCopy
+鲁大师
+坚果云
+MindMaster
+Todoist
+PingInfoView
+ip scanner
+迅雷
+EV录屏
+Citrix Workspace
+Citrix Receiver
+FusionServerTools
+Google Update Helper
+GoogleUpdate
+mobsync
+Vast Data Studio
+Calculator
+CxAudioSvc
+Oracle VM VirtualBox
+人行征信中心密码控件非插件版
+应用推荐
+Obsidian
+clash
+ftscanmgrhv
+photolaunch
+Nvidia Share
+LenovoUtilityService
+eDiary
+阿里旺旺
+北京银行证书应用环境卸载程序
+钉钉
+福昕高级PDF编辑器
+人行征信中心密码控件IE版
+银联安全控件IE版
+印象笔记
+有道云笔记
+支付宝安全控件
+lghub*
+Nahimic*
+Adobe Flash Player 34 PPAPI
+CalculatorApp
+DisplayDriverAnalyzer
+DriveControll
+HDPTraceClient
+NVAPI Monitor plugin for NvContainer
+NVDisplay.Container
+NisSrv
+Realtek Card Reader
+Realtek High Definition Audio Driver
+igfxCUIService
+nvcontainer
+ipf *
+legion zone
+nvsphelper
+X-Rite Color Assistant
+splwow64
+dkwebctrl
+ElevocControlService
+FnHotkeyUtility
+IntelCpHDCPSvc
+FusionSphere-ClientIntegrationPluginKvm
+Hillstone Secure Connetc
+网易云音乐
+fotiaoqiang
+mcafee*
+sangfor*
+GCC
+VSCODE
+Eclipse
+Java VisualVM
+Eclipse Memory Analyzer
+jd-gui
+Review Board
+TeamCity Professional
+Perf
+Clang
+CodeChecker
+Bandit
+Jenkins
+Strawberry Perl
+Qt
+CodeBlocks
+Jmeter
+BenchMarkSQL
+TPCH
+OpenVas
+Peach Fuzz
+Checksec
+YAT
+Sqlsmith
+sysbench
+databench
+tpcds
+Postman
+Owasp Zed Attack Proxy
+Async-profiler
+华为云二进制成分分析工具
+Checode
+Nessus
+CodePecker
+Vim
+Sublime Text
+MySQL Community Edition
+Oracle SQL Developer
+MongoDB Compass
+Oracle Database  Express Edition
+dbForge Studio  for MySQL
+LibreOffice
+思源笔记
+Joplin
+MarkText
+Notable
+SumatraPDF
+OpenOffice
+Zotero
+福昕阅读器
+福昕PDF编辑器
+wolai
+迅读PDF大师
+MindLine
+小新PDF阅读器
+知犀思维导图
+AnyTXT Searcher
+福昕云文档
+PDF-XChange Editor
+zoom
+TIM
+feiQ
+飞秋
+WeMeeting
+飞书
+Cisco Webex Meetings 客户端
+华为云会议
+WebMeeting
+Microsoft Teams
+全时云会议
+瞩目
+小鱼易连
+clash
+dataExchangehost
+Leaswallpaperplay
+monotificationux
+igfxextn
+ElanIapService
+Hxoutlook
+Apple Mobile Device Support    
+Awesomium SDK     
+Bonjour    
+Free Download Manager     
+Launcher Prerequisites
+Math Kernel Libraries       
+TAP-Windows
+UpdateAssistant   
+Windows Driver Package - Oracle Corporation LdBoxDrv LdBoxDrv 
+Windows SDK AddOn      
+iTunes  
+爱思助手
+分区助手
+Apple 应用程序支持
+DSC/AA Factory Installer    
+HiSuite  
+PostgreSQL 
+Teams Machine-Wide Installer       
+腾讯课堂 
+openvpn
+ARMOURY CRATE Service 
+Application Verifier x64 External Package
+CAJViewer   
+CUBLAS Development    
+CUDA
+CUFFT
+CUPTI 
+CURAND 
+CUSOLVER
+CUSPARSE
+Compute Sanitizer      
+DiagnosticsHub_CollectionService
+Fortran Examples     
+GPU Library Advisor    
+GameFirst VI     
+Kits Configuration Installer 
+MEMCHECK   
+MySQL Workbench 
+NPP Development     
+NVGRAPH Development     
+NVJPEG Development    
+NVML Development       
+NVRTC Development       
+NVTX Development    
+RefreshRateService     
+SDK ARM Additions       
+SDK ARM Redistributables      
+Universal CRT 
+Universal General MIDI DLS Extension SDK     
+Update for    
+VS Immersive Activate Helper     
+VS JIT Debugger  
+VS Script Debugging Common       
+Visual Profiler   
+WinAppDeploy     
+WinRT Intellisense 
+Windows App Certification Kit 
+Windows Desktop Extension SDK    
+Windows IoT Extension SDK        
+Windows Mobile Extension SDK     
+Windows SDK     
+Windows Software Development Kit - Windows 
+Windows Team Extension SDK      
+Writage      
+cuobjdump      
+icecap_collection
+nvcc       
+nvprune     
+vcpp_crt.redist.clickonce      
+vs_communitymsi       
+vs_communitymsires      
+vs_filehandler   
+vs_filehandler    
+vs_minshellinteropmsi       
+vs_tipsmsi       
+MySQL Connector C++
+MySQL Connector J
+MySQL Connector/ODBC 
+MySQL Documents
+MySQL Examples and Samples 
+MySQL Installer - Community
+MySQL Installer for Windows - Community
+MySQL Router 
+MySQL Shell 
+MySQL Workbench CE
+MySQL Connector Net
+PotPlayer
+wallless
+WinFsp
+SmartByte Drivers and Services
+Vulkan Run Time Libraries
+OCSetUp
+Bluetooth Installer
+Vulkan Run Time Libraries
+Core Temp
+FormatFactory
+MountPluginSetup
+MultiFunction Suite DocuPrint
+ARM Compiler 5.06 update 7        
+Android Studio        
+CLion 2022.3.3        
+CMake        
+Cocos Dashboard        
+Cocos Dashboard         
+Dart stable         stable 
+DataGrip 2022.3.3        
+GaomonTablet        
+GoLand 2022.3.3        
+IntelliJ IDEA 2022.3.3        
+Internet Download Manager        
+Keil μVision4        
+MathType 7        
+PaintTool SAI Ver.2         
+PyCharm 2022.3.3        
+QuickLook        
+Realtek Ethernet Controller Driver        
+ResearchSoft Direct Export Helper        
+Samsung USB Driver for Mobile Phones        
+Sandboxie  (64-bit)        
+Steinberg Cubase 11        
+Steinberg Generic Lower Latency ASIO Driver 64bit        
+Steinberg Library Manager        
+Steinberg VST Transit 64bit        
+Typora 1.2        
+UE Prerequisites (x64)        
+UE4 Prerequisites (x64)        
+Unity        
+Unity         
+Unity         
+Unity Hub         
+VMware Workstation        
+Vagrant        
+WebStorm 2022.3.3        
+Wondershare Recoverit(Build )        
+XMind         
+Xamarin Remoted iOS Simulator        
+eLicenser Control        
+雷柏V805键盘驱动 
+雷柏V808键盘驱动 
+塞尔达传说        
+Dart stable 64-bit
+XMind 11.1.2
+傲梅轻松备份免费版

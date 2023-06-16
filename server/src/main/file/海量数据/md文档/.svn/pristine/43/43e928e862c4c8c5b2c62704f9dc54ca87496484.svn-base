@@ -1,0 +1,158 @@
+#### 行级访问控制
+
+**功能描述**
+
+行级访问控制特性将数据库访问控制精确到数据表行级别，使数据库达到行级访问控制的能力。不同用户执行相同的SQL查询操作，读取到的结果是不同的。
+
+行级访问控制的目的是控制表中行级数据可见性，通过在数据表上预定义Filter，在查询优化阶段将满足条件的表达式应用到执行计划上，影响最终的执行结果。
+
+**注意事项**
+
+- 行级访问控制策略仅可以应用到SELECT、UPDATE和DELETE操作，不支持应用到INSERT和MERGE操作。
+- 支持对行存表、行存分区表、列存表、列存分区表、复制表、unlogged表、hash表定义行级访问控制策略，不支持HDFS表、外表、临时表定义行级访问控制策略。
+- 不支持对视图定义行级访问控制策略。
+- 同一张表上可以创建多个行级访问控制策略，一张表最多允许创建100个行级访问控制策略。
+- 初始用户和系统管理员不受行级访问控制策略的影响。
+- 对于设置了行级访问控制策略的表，需要谨慎授予其他用户对该表的trigger权限，以免其他用户利用触发器绕过行级访问控制策略。
+
+**配置方法**
+
+用户可以在数据表创建行访问控制（Row Level Security）策略，详情参考SQL语法CREATE ROW LEVEL SECURITY POLICY。该策略是指针对特定数据库用户、特定SQL操作生效的表达式。当数据库用户对数据表访问时，若SQL满足数据表特定的Row Level Security策略，在查询优化阶段将满足条件的表达式，按照属性（PERMISSIVE | RESTRICTIVE）类型，通过AND或OR方式拼接，应用到执行计划上。
+
+
+
+**示例**
+
+1、创建用户alice, bob, peter 。
+
+```
+CREATE USER alice PASSWORD 'Vastbase@123'; 
+CREATE USER bob PASSWORD 'Vastbase@123'; 
+CREATE USER peter PASSWORD 'Vastbase@123'; 
+```
+
+2、创建表all_data，包含不同用户数据信息 。
+
+```
+CREATE TABLE all_data(id int, role varchar(100), data varchar(100)); 
+```
+
+3、向数据表插入数据 。
+
+```
+INSERT INTO all_data VALUES(1, 'alice', 'alice data'); 
+INSERT INTO all_data VALUES(2, 'bob', 'bob data'); 
+INSERT INTO all_data VALUES(3, 'peter', 'peter data'); 
+```
+
+4、将表all_data的读取权限赋予alice，bob和peter用户 。
+
+```
+GRANT SELECT ON all_data TO alice, bob, peter; 
+```
+
+5、打开行访问控制策略开关 。
+
+```
+ALTER TABLE all_data ENABLE ROW LEVEL SECURITY; 
+```
+
+6、创建行访问控制策略，当前用户只能查看用户自身的数据 。
+
+```
+CREATE ROW LEVEL SECURITY POLICY all_data_rls ON all_data USING(role = CURRENT_USER); 
+```
+
+7、查看表详细信息 。
+
+```
+\d+ all_data 
+```
+
+结果显示如下：
+
+```
+                         Table "public.all_data"
+ Column |     Type     | Modifiers | Storage  | Stats target | Description 
+--------+--------------+-----------+----------+--------------+-------------
+ id     | integer      |           | plain    |              | 
+ role   | varchar(100) |           | extended |              | 
+ data   | varchar(100) |           | extended |              | 
+Row Level Security Policies:
+    POLICY "all_data_rls" FOR ALL
+      TO public
+      USING (((role)::name = "current_user"()))
+Has OIDs: no
+Options: orientation=row, compression=no, fillfactor=80, enable_rowsecurity=true
+```
+
+8、验证效果，切换至用户alice，执行SQL"SELECT * FROM public.all_data" 。
+
+```
+\c - alice
+SELECT * FROM public.all_data; 
+```
+
+当结果显示如下信息，则表示行级访问控制生效。
+
+```
+ id | role  |   data 
+----+-------+------------ 
+ 1 | alice | alice data 
+(1 row) 
+```
+
+查询语句执行计划。
+
+```
+EXPLAIN(COSTS OFF) SELECT * FROM public.all_data; 
+```
+
+结果显示如下，可以看到通过rolename进行过滤。
+
+```
+              QUERY PLAN 
+-----------------------------------------
+ Streaming (type: GATHER) 
+  Node/s: All datanodes 
+  ->  Seq Scan on all_data 
+     Filter: ((role)::name = 'alice'::name) 
+ Notice: This query is influenced by row level security feature 
+(5 rows) 
+```
+
+9、验证结果，切换至用户peter，执行SQL"SELECT * FROM public.all_data" 。
+
+```
+\c - peter
+SELECT * FROM public.all_data; 
+```
+
+当结果显示如下信息，则表示行级访问控制生效。
+
+```
+ id | role  |   data 
+----+-------+------------ 
+ 3 | peter | peter data 
+(1 row) 
+```
+
+ 查询语句执行计划。
+
+```
+ EXPLAIN(COSTS OFF) SELECT * FROM public.all_data; 
+```
+
+结果显示如下，可以看到通过rolename进行过滤。
+
+```
+              QUERY PLAN 
+-----------------------------------
+ Streaming (type: GATHER) 
+  Node/s: All datanodes 
+  ->  Seq Scan on all_data 
+     Filter: ((role)::name = 'peter'::name) 
+ Notice: This query is influenced by row level security feature 
+(5 rows)
+```
+

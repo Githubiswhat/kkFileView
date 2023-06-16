@@ -1,0 +1,314 @@
+#### 敏感标记
+
+**功能描述**
+
+为实现强制访问控制功能，数据库管理系统应维护主体和客体相关的敏感标记，为主体和客体划分安全级。这些敏感标记是等级分类和非等级类别的组合，是实施强制访问控制的依据。
+
+**等级说明**
+
+Vastbase中敏感标记由等级分类和非等级类别两部分组成，如表1所示。两者中间用冒号（“:”）分隔，形式如下：
+
+```
+等级分类组:非等级类别组
+```
+
+其中等级分类组由多个等级分类组成，非等级类别组由多个非等级类别组成。等级分类和非等级类别之间用逗号（“,”）分隔，用点号（“.”）表示区间。
+
+例如敏感标记“L1,L3.L7:G2,G4.G6,G27”表示的等级分类和非等级类别分别为：
+
+等级分类：L1,L3~L7
+
+非等级类别：G2,G4~G6,G27
+
+表1
+
+| 类别       | 描述                                                         |
+| :--------- | :----------------------------------------------------------- |
+| 等级分类   | Vastbase内置了16个等级分类，命名为Li，其中（1≤i≤16），等级标记满足偏序关系（若i≤j，则Li ≤ Lj）。 |
+| 非等级类别 | Vastbase内置了32个非等级类别，命名为Gi，其中（1≤i≤32）。非等级标记无法进行大小比较，但可以进行集合运算。例如非等级标记“G1,G3”包含“G1”。 |
+
+Vastbase中只有自主访问控制（DAC）校验通过的情况下才能进行强制访问控制（MAC）校验，强制访问控制的读写规则如表2所示。
+
+表2
+
+| 强制访问控制策略     | 描述                                                         |
+| :------------------- | ------------------------------------------------------------ |
+| 表插入（INSERT）策略 | 主体敏感等级标记小于等于表敏感等级标记，且主体敏感非等级标记是表敏感非等级标记子集则允许插入。 |
+| 表修改（UPDATE）策略 | 主体敏感标记与元组的敏感标记一致则允许修改元组。             |
+| 表删除（DELETE）策略 | 同修改（UPDATE）策略。                                       |
+| 表查询（SELECT）策略 | 主体敏感等级标记大于等于元组敏感等级标记，且主体敏感非等级标记是元组敏感非等级标记超集则允许查询。 |
+| 存储过程和触发器     | 当主体安全等级标记等于函数/存储过程安全等级标记，且主体安全非等级标记是函数/存储过程安全非等级标记超集则允许执行。 |
+
+**语法格式**
+
+表列：
+
+```
+SECURITY LABEL [FOR provider] ON COLUMN table_name.column_name IS 'label_name';  --设置表列的敏感标记
+SECURITY LABEL [FOR provider] ON COLUMN table_name.column_name IS NULL;  --删除表列的敏感标记
+```
+
+存储过程：
+
+```
+SECURITY LABEL [ FOR vastbase ] ON PROCEDURE procedure_name [ ( [ [ argmode ] [ argname ] argtype [, ...] ] ) ] IS 'label_name' | NULL;
+```
+
+触发器：
+
+```
+SECURITY LABEL [ FOR vastbase ] ON TRIGGER object_name OF table_name IS 'label_name'' | NULL;
+```
+
+**参数说明**
+
+label_name：敏感标记名称，在数据库中是唯一的，其长度不能超过63个字节，所有的非关键字、非保留关键字、可以做字段名称的关键字均可作为敏感标记名称。
+
+provider：插件，数据库通过将插件（如果有）和数据库默认加载的插件ogmac组成链表。
+
+**示例**
+
+- 表强制访问控制策略
+
+1、登陆进入vastbase数据库，创建用户。
+
+```
+  create user user1 with password 'vastbase@123';
+  create user user2 with password 'vastbase@123';
+  create user user3 with password 'vastbase@123';
+  create user user4 with password 'vastbase@123';
+  create user user5 with password 'vastbase@123';
+  create user user6 with password 'vastbase@123';
+  create user user7 with password 'vastbase@123';
+  create user user8 with password 'vastbase@123';
+  create user user9 with password 'vastbase@123';
+  create table t1(c1 int,c2 varchar(50));
+```
+
+2、给用户授权。
+
+```
+  GRANT ALL ON TABLE t1 TO user1;
+  GRANT ALL ON TABLE t1 TO user2;
+  GRANT ALL ON TABLE t1 TO user3;
+  GRANT ALL ON TABLE t1 TO user4;
+  GRANT ALL ON TABLE t1 TO user5;
+  GRANT ALL ON TABLE t1 TO user6;
+  GRANT ALL ON TABLE t1 TO user7;
+  GRANT ALL ON TABLE t1 TO user8;
+  GRANT ALL ON TABLE t1 TO user9;
+```
+
+3、创建标签并为主体和客体授予标签。
+
+```
+CREATE SECURITY LABEL label1 'L8:G7,G2,G32,G15.G20';
+CREATE SECURITY LABEL label2 'L5:G7,G2,G15.G20';
+CREATE SECURITY LABEL label3 'L10:G2,G7';
+CREATE SECURITY LABEL label4 'L15:G1,G2,G4,G7.G10,G32,G15.G20';
+CREATE SECURITY LABEL label5 'L12:G1,G2,G7.G10,G32,G15.G20';
+CREATE SECURITY LABEL label6 'L8:G7,G2,G32,G15.G20';
+CREATE SECURITY LABEL label7 'L8:G7,G2,G32,G15.G20';
+```
+
+4、对数据库对象设置敏感标记。
+
+```
+SECURITY LABEL ON TABLE t1 IS 'label1';
+SECURITY LABEL ON role user1 IS 'label2';
+SECURITY LABEL ON role user2 IS 'label3';
+SECURITY LABEL ON role user3 IS 'label4';
+SECURITY LABEL ON role user4 IS 'label2';
+SECURITY LABEL ON role user5 IS 'label3';
+SECURITY LABEL ON role user6 IS 'label5';
+SECURITY LABEL ON role user7 IS 'label6';
+SECURITY LABEL ON role user8 IS 'label7';
+```
+
+5、根据情况分别用user1,user2,user3,user4,user5,user6,user7,user8用户登数据库，对表t1中的记录进行增删改查操作。
+1)主体等级小于等于客体的等级，主体非等级是客体的非等级的子集时，主体(用户)对客体(表)insert数据。
+
+  首次切换至新角色（user1）需要更新密码（密码至少需要包含三种字符）。
+
+```
+\c - user1
+```
+
+  使用如下命令来更改密码：
+
+```
+ALTER ROLE user1 identified by 'vastbase@12' replace 'vastbase@123';
+```
+
+  进行插入操作。
+
+```
+insert into t1 values(1,'aaa');
+insert into t1 values(2,'bbb');
+insert into t1 values(3,'ccc');
+insert into t1 values(4,'ddd');
+```
+
+  2)主体等级大于等于客体的等级，主体非等级是客体的非等级的超集时，主体(用户)对客体(表)进行select。
+
+  首次切换至新角色（user6）需要更新密码（密码至少需要包含三种字符）。
+
+```
+\c - user6 
+```
+
+  使用如下命令来更改密码：
+
+```
+ALTER ROLE user6 identified by 'vastbase@12' replace 'vastbase@123';
+```
+
+  进行查询操作。
+
+```
+select * from t1;
+```
+
+  结果显示如下：
+
+```
+c1 | c2  
+----+-----
+ 1 | aaa
+ 2 | bbb
+ 3 | ccc
+ 4 | ddd
+(4 rows)
+```
+
+  3)主体等级等于客体的等级，主体非等级等于客体的非等级时，主体(用户)对客体(表)进行update操作。
+
+首次切换至新角色（user7）需要更新密码（密码至少需要包含三种字符）。
+
+```
+\c - user7
+```
+
+使用如下命令来更改密码：
+
+```
+ALTER ROLE user7 identified by 'vastbase@12' replace 'vastbase@123';
+```
+
+进行更新操作。
+
+```
+update t1 set c2='mmm';
+```
+
+验证结果如下所示：
+
+```
+select * from t1;
+ c1 | c2  
+----+-----
+ 1 | mmm
+ 2 | mmm
+ 3 | mmm
+ 4 | mmm
+(4 rows)
+```
+
+4)主体等级等于客体的等级，主体非等级等于客体的非等级时，主体(用户)对客体(表)进行delete操作。
+
+首次切换至新角色（user7）需要更新密码（密码至少需要包含三种字符）。
+
+```
+\c - user8
+```
+
+使用如下命令来更改密码：
+
+```
+ALTER ROLE user8 identified by 'vastbase@12' replace 'vastbase@123';
+```
+
+执行删除。
+
+```
+delete from t1 where c1=4;
+```
+
+验证结果如下所示：
+
+```
+select * from t1;
+ c1 | c2  
+----+-----
+ 1 | mmm
+ 2 | mmm
+ 3 | mmm
+(3 rows)
+```
+
+
+
+- 存储过程强制访问控制策略
+
+1、创建存储过程。
+
+```
+CREATE OR REPLACE PROCEDURE prc_add
+(
+param1 IN INTEGER,
+param2 IN OUT INTEGER
+)
+AS
+BEGIN
+param2:= param1 + param2;
+dbms_output.put_line('result is: '||to_char(param2));
+END;
+/
+```
+
+2、创建安全标签。
+
+```
+CREATE SECURITY LABEL label_pro 'L5:G7,G2';
+```
+
+3、设置安全标签。
+
+```
+SECURITY LABEL ON PROCEDURE prc_add IS 'label_pro';
+```
+
+- 触发器强制访问控制策略
+
+1、创建触发器。
+
+```
+CREATE TABLE test_trigger_src_tbl(id1 INT, id2 INT, id3 INT);
+CREATE TABLE test_trigger_des_tbl(id1 INT, id2 INT, id3 INT);
+CREATE OR REPLACE FUNCTION tri_insert_func() RETURNS TRIGGER AS
+$$
+DECLARE
+BEGIN
+INSERT INTO test_trigger_des_tbl VALUES(NEW.id1, NEW.id2, NEW.id3);
+RETURN NEW;
+END
+$$ LANGUAGE PLPGSQL;
+
+CREATE TRIGGER insert_trigger
+BEFORE INSERT ON test_trigger_src_tbl
+FOR EACH ROW
+EXECUTE PROCEDURE tri_insert_func();
+```
+
+2、创建安全标签。
+
+```
+CREATE SECURITY LABEL label_tri 'L5:G7,G2,G15.G21';
+```
+
+3、设置安全标签。
+
+```
+SECURITY LABEL ON TRIGGER insert_trigger OF test_trigger_src_tbl IS 'label_tri';
+```
+

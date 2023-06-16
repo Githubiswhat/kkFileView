@@ -1,0 +1,163 @@
+# 审计日志自动转储
+
+## 功能描述
+
+Vastbase G100支持当审计日志空间满后审计日志自动转存备份的功能。当审计日志空间满且未开启停写策略（audit_stop_policy=off）时，自动将最早的审计文件转存，即将其从审计目录转移至转存目录。
+
+## 注意事项
+
+- 本功能仅在Vastbase G100 2.2 Build 12及以后版本支持使用。
+- 对于不同的数据库实例，建议不要将审计日志转存目录配置为相同的目录，否则会造成转存审计日志数据混乱。
+
+## 背景信息
+
+- 与审计日志备份相关的参数参见[表1](#table1)：
+
+  **表1** 审计日志相关配置参数和内置函数<a name='table1'>
+  
+  <table>
+      <tr>
+      <th>配置项</th>
+      <th>配置项类别</th>
+      <th>含义</th>
+      </tr>
+  <tr>
+      <td>audit_dump_directory</td>
+      <td>配置参数</td> 
+      <td>用于设置审计日志自动转储目录。
+          <br>默认值为空，设置路径应为绝对路径，否则报错。
+      </td>
+      </tr>
+      <tr>
+      <td>pg_query_audit_dump()</td>
+      <td>内置函数</td>
+      <td>用于查询转存日志。</td>
+      </tr>
+      <tr>
+       <td>pg_query_audit_info()</td>
+       <td>内置函数</td>
+       <td>用于查询存储审计日志空间信息。</td>
+      </tr>
+  </table>
+
+
+- 设置审计日志转存目录。
+
+  ```sql
+  alter system set audit_dump_directory='audit_dump_dir'
+  ```
+
+  > <div align="left"><img src="image/img2.png" style="zoom:75%"></div>
+  >
+  > - audit_dump_dir为用户自定义的转存审计日志的目录。
+  > - 转存目录需要为绝对路径，否则报错。
+  > - 转存目录在其他数据库实例目录下时，转存目录下无审计日志文件。
+
+- 查询转存日志。
+
+  ```sql
+  select detail_info,type from pg_query_audit_dump(now()-1,now());
+  ```
+
+- 查询审计日志空间信息。
+
+  ```sql
+  select *from pg_query_audit_info();
+  ```
+
+## 操作步骤
+
+**前提条件：**
+
+1、开启审计参数，修改单个审计日志、审计空间大小。
+
+```sql
+alter system set audit_enabled=on;
+alter system set audit_rotation_size=1024;
+alter system set audit_space_limit=4096;
+```
+
+2、开启dml操作审计。
+
+```sql
+alter system set audit_dml_state=1;
+```
+
+**开启审计日志自动转存：**
+
+1、查看停写策略、转存目录。
+
+```sql
+show audit_stop_policy;
+show audit_dump_directory;
+```
+
+> <div align="left"><img src="image/img1.png" style="zoom:75%")</div> 
+>
+> - 停写策略audit_stop_policy相关内容参见[审计开关](../开发者指南/审计开关.md)。
+> - 设置审计日志自动转储之前应该关闭停写策略。
+
+查看结果为停写策略处于关闭状态，转存目录为空：
+
+```sql
+ audit_stop_policy
+-------------------
+ off
+(1 row)
+
+ audit_dump_directory
+----------------------
+
+(1 row)
+```
+
+2、设置转存目录。
+
+（1）创建转存目录。
+
+```shell
+mkdir /home/test/pg_audit
+```
+
+（2）进入数据库客户端设置转存目录参数值。
+
+```sql
+alter system set audit_dump_directory='/home/test/pg_audit';
+```
+
+（3）重启数据库
+
+```shell
+vb_ctl restart
+```
+
+（4）连接进入vsql客户端工具后查看转存目录值。
+
+```sql
+show audit_dump_directory;
+```
+
+查询结果为：
+
+```sql
+  audit_dump_directory
+-------------------------
+ /home/vastbase/pg_audit
+(1 row)
+```
+
+3、查看第一条审计信息。
+
+```sql
+select * from pg_query_audit_dump('2022-12-31',now()) limit 1;
+```
+
+4、查看转存目录空间信息。
+
+```sql
+select * from pg_query_audit_info();
+```
+
+## 相关链接
+
+[审计开关](../开发者指南/审计开关.md)、[审计日志概述](审计日志概述.md)、[维护审计日志](维护审计日志.md)

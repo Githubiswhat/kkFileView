@@ -1,0 +1,19 @@
+# 软件卸载
+
+如果需要卸载exBase，请用root用户执行以下操作步骤：
+
+1、切换到/exbase_environment目录下。（该目录请以实际解压情况为准）。
+
+```
+cd  /exbase_environment/
+```
+
+2、执行如下指令，运行卸载脚本。
+
+```
+./exbase_uninstall.sh
+```
+
+当出现如下图显示的信息时，表示卸载完成。
+
+<div align="center"><img src="image/卸载.png" style="zoom:80%"></div>

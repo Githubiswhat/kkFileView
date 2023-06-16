@@ -1,0 +1,8 @@
+# 表和索引
+
+本章节介绍了Vastbase通过使用索引实现文本检索的相关信息。
+
+<a href="创建GIN索引.html"><li>**创建GIN索引**</li></a>
+<a href="搜索表.html"><li>**搜索表**</li></a>
+<a href="索引使用约束.html"><li>**索引使用约束**</li></a>
+

@@ -1,0 +1,44 @@
+###  关联数组
+
+**功能描述**
+
+关联数组也称索引表，是一组key-value键值对，每个key都是一个唯一索引。Vastbase支持在PL/SQL中定义关联数组类型，以及定义和使用关联数组变量，并支持关联数组元素的赋值与访问。
+
+**语法格式**
+
+```
+TYPE typename IS TABLE OF datatype INDEX BY subtype;
+```
+
+**参数说明**
+
+- typename：类型名称。
+- datatype：数组元素支持Vastbase数据类型包括数值、字符、时间以及自定义类型，不支持REF CURSOR和NCLOB类型。
+- subtype：数组下标的类型，目前支持varchar2，varchar2(n)，varchar，varchar(n)，pls_integer（整型数字）。
+
+**注意事项**
+
+赋值与访问关联数组变量，访问的下标类型可以是整型数字（INDEX BY PLS_INTEGER），varchar以及varchar2类型下标。
+
+**示例**
+
+定义关联数组赋值与访问关联数组变量。
+
+```
+CREATE OR REPLACE FUNCTION Fun() RETURNS int AS $$
+DECLARE
+TYPE ARRAY_INTEGER IS TABLE OF int index by varchar(20);   --定义类型
+ARRINT ARRAY_INTEGER;   --定义变量
+BEGIN
+ARRINT('TOM') := 99;    --通过变量下标给数组赋值
+RETURN ARRINT['TOM'];     --返回数组元素
+END;
+$$
+LANGUAGE plpgsql;
+```
+
+返回结果为:
+
+```
+CREATE FUNCTION
+```

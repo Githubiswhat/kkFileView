@@ -1,0 +1,39 @@
+
+-   abs(num)
+
+    描述：绝对值。
+
+    入参取值范围：int2、int4、int8、float4、float8和numeric。
+
+    返回值类型：和输入相同。
+
+    注意事项：通过“取值范围取值+abs”的组合限制入参取值范围(例如：int2abs、int4abs、int8abs、float4abs、float8abs和numeric_abs)。
+
+示例一：
+
+```
+vastbase=# SELECT abs(-17.4);
+    abs
+------
+    17.4
+(1 row)
+```
+
+示例二：
+   
+```
+vastbase=# select int2abs(123.123);
+ int2abs
+---------
+     123
+(1 row)
+```
+
+示例三：
+   
+```
+vastbase=# select int2abs(32768);
+ERROR:  smallint out of range
+CONTEXT:  referenced column: int2abs
+```
+
